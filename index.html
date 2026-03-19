@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EastFever - Beyond Here, Another World</title>
+    <meta name="description" content="이스트피버 브랜드 페이지">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://eastfever.com">
+    <meta property="og:title" content="EastFever">
+    <meta property="og:description" content="Beyond Here, Another World - 이스트피버 앱 개발 공작소">
+    <meta property="og:image" content="https://eastfever.com/assets/og-image-final.png">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header id="header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">EastFever</div>
+                <a href="mailto:mysticodoi@gmail.com" class="header-email">mysticodoi@gmail.com</a>
+            </div>
+            <div class="lang-selector">
+                <button id="lang-btn" class="lang-btn">
+                    <span class="lang-icon">🌐</span>
+                    <span id="current-lang">한국어</span>
+                    <span class="arrow">▾</span>
+                </button>
+                <ul id="lang-dropdown" class="lang-dropdown hidden">
+                    <li data-lang="ko">한국어</li>
+                    <li data-lang="en">English</li>
+                    <li data-lang="ja">日本語</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <h1 id="hero-main-text" class="fade-in-scale">Beyond Here, Another World</h1>
+                <p id="hero-sub-text" class="typing-effect"></p>
+
+            </div>
+            <div class="marquee-container">
+                <div id="marquee-bar" class="marquee-bar">
+                    <!-- KeyWords will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Section -->
+        <section id="services" class="services-section">
+            <div class="section-container">
+                <h2 id="title-webapps" class="section-title">Web Apps</h2>
+                <div id="webapp-list" class="service-grid">
+                    <!-- Web App Cards will be injected here -->
+                </div>
+
+                <h2 id="title-games" class="section-title">Mobile Games</h2>
+                <div id="game-list" class="service-grid">
+                    <!-- Game Cards will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SNS Section -->
+        <section id="sns" class="sns-section">
+            <div class="section-container">
+                <h2 id="title-sns" class="section-title">Connect</h2>
+                <div id="sns-list" class="sns-grid">
+                    <!-- SNS Cards will be injected here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="contact-info">
+                <h3 id="title-contact">Contact</h3>
+                <a href="mailto:mysticodoi@gmail.com" class="email-link">mysticodoi@gmail.com</a>
+            </div>
+            <div class="footer-links">
+                <button id="privacy-btn" class="footer-link-btn">개인정보보호방침</button>
+            </div>
+            <p class="copyright">&copy; 2026 EastFever. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Privacy Modal -->
+    <div id="privacy-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="privacy-modal-title">개인정보보호방침</h2>
+                <button id="modal-close" class="modal-close-btn">&times;</button>
+            </div>
+            <div id="privacy-content" class="modal-body">
+                <!-- Privacy content will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button id="modal-confirm" class="confirm-btn">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data-loader.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+{
+  "meta": {
+    "title": {
+      "ko": "EastFever - Beyond Here, Another World",
+      "en": "EastFever - Beyond Here, Another World",
+      "ja": "イーストフィーバー - Beyond Here, Another World"
+    },
+    "description": {
+      "ko": "안녕하세요. 이스트피버의 앱 개발 공작소 입니다. 다양한 앱과 게임을 개발합니다.",
+      "en": "Welcome to EastFever's app development lab. We develop various apps and games",
+      "ja": "イーストフィーバーのアプリ開発工房へようこそ。様々なアプリとゲームを開発しています。"
+    }
+  },
+  "hero": {
+    "mainText": {
+      "ko": "Beyond Here, Another World",
+      "en": "Beyond Here, Another World",
+      "ja": "Beyond Here, Another World"
+    },
+    "subText": {
+      "ko": "안녕하세요. EastFever의 앱 개발 공작소에 오신 것을 환영 합니다",
+      "en": "Welcome to EastFever's App Development Workshop",
+      "ja": "イーストフィーバーのアプリ開発工房へようこそ"
+    }
+  },
+  "keywords": {
+    "ko": [
+      "#이스트피버",
+      "#신묘한만세력",
+      "#마훼카",
+      "#HighHigh",
+      "#인생낱말찾기",
+      "#바이브개발",
+      "#AI개발",
+      "#게임개발",
+      "#앱개발",
+      "#실전개발",
+      "#1인개발자"
+    ],
+    "en": [
+      "#EastFever",
+      "#Sinmyo",
+      "#MyFavCopy",
+      "#HighHigh",
+      "#VibeDev",
+      "#AIDev",
+      "#GameDev",
+      "#AppDev",
+      "#SoloDev"
+    ],
+    "ja": [
+      "#イーストフィーバー",
+      "#神妙な四柱推命",
+      "#マフェカ",
+      "#HighHigh",
+      "#AI開発",
+      "#VibeDev",
+      "#雰囲気デブ",
+      "#ゲーム開発",
+      "#アプリ開発",
+      "#個人開発"
+    ]
+  },
+  "sections": {
+    "webapps": {
+      "ko": "웹앱",
+      "en": "Web Apps",
+      "ja": "ウェブアプリ"
+    },
+    "games": {
+      "ko": "모바일 게임",
+      "en": "Mobile Games",
+      "ja": "モバイルゲーム"
+    },
+    "sns": {
+      "ko": "SNS 채널",
+      "en": "SNS Channels",
+      "ja": "SNSチャンネル"
+    },
+    "contact": {
+      "ko": "문의 및 제안",
+      "en": "Contact & Suggestion",
+      "ja": "お問い合わせと提案"
+    }
+  },
+  "services": [
+    {
+      "id": "sinmyo",
+      "type": "webapp",
+      "status": "online",
+      "url": "https://sinmyo.eastfever.com",
+      "name": {
+        "ko": "신묘한 만세력",
+        "en": "Sinmyo-Saju",
+        "ja": "神妙な四柱推命"
+      },
+      "description": {
+        "ko": "평소 쓰는 AI를 당신만의 전속 역술가로 활용해 보세요.",
+        "en": "AI Eastern Astrology Fortune Teller Prompter",
+        "ja": "韓国のAI四柱推命相談Prompt生成器"
+      },
+      "thumbnail": "assets/sinmyo-thumb.png"
+    },
+    {
+      "id": "mfc",
+      "type": "webapp",
+      "status": "online",
+      "url": "https://mfc.eastfever.com",
+      "name": {
+        "ko": "마훼카",
+        "en": "MyFavCopy (My Favorite Copies)",
+        "ja": "マフェカ"
+      },
+      "description": {
+        "ko": "편리한 복붙 창고",
+        "en": "Clipboard Drawer",
+        "ja": "便利なコピペポケット"
+      },
+      "thumbnail": "assets/mfc-thumb.webp"
+    },
+    {
+      "id": "hihi",
+      "type": "game",
+      "status": "online",
+      "url": "https://apps.apple.com/us/app/%ED%95%98%EC%9D%B4-%ED%95%98%EC%9D%B4/id1511662492?l=ko",
+      "name": {
+        "ko": "하이하이",
+        "en": "High-High",
+        "ja": "ハイハイ"
+      },
+      "description": {
+        "ko": "2D 캐주얼 플랫포머 지렁이 액션",
+        "en": "2D Casual Platformer Worm Action",
+        "ja": "2Dカジュアルプラットフォーマーミミズアクション"
+      },
+      "thumbnail": "assets/hihi-thumb.png"
+    },
+    {
+      "id": "insaeng",
+      "type": "game",
+      "status": "online",
+      "url": "https://apps.apple.com/us/app/%EC%9D%B8%EC%83%9D%EB%82%B1%EB%A7%90%EC%B0%BE%EA%B8%B0/id1521387913?l=ko",
+      "name": {
+        "ko": "인생낱말찾기",
+        "en": "Search Life Words",
+        "ja": "人生言葉探し"
+      },
+      "description": {
+        "ko": "뒤섞인 글자 속 낱말 찾기 퍼즐",
+        "en": "Korean Service Only",
+        "ja": "韓国サービスのみ"
+      },
+      "thumbnail": "assets/insaeng-thumb.png"
+    }
+  ],
+  "sns": [
+    {
+      "id": "threads",
+      "label": "Threads",
+      "url": "https://www.threads.com/@five_east_fever",
+      "icon": "📱"
+    },
+    {
+      "id": "naver-blog",
+      "label": "Naver Blog",
+      "url": "https://blog.naver.com/five_east_fever",
+      "icon": "✍️"
+    }
+  ],
+  "common": {
+    "visit": {
+      "ko": "방문하기",
+      "en": "Visit",
+      "ja": "訪問する"
+    },
+    "privacy": {
+      "ko": "개인정보보호방침",
+      "en": "Privacy Policy",
+      "ja": "個人情報保護方針"
+    },
+    "close": {
+      "ko": "닫기",
+      "en": "Close",
+      "ja": "閉じる"
+    },
+    "online": {
+      "ko": "운영중",
+      "en": "Online",
+      "ja": "運営中"
+    },
+    "developing": {
+      "ko": "개발중",
+      "en": "In Dev",
+      "ja": "개발중"
+    }
+  },
+  "privacy": {
+    "ko": "## 개인정보처리방침\n\n이스트피버(이하 '본 서비스')는 사용자의 개인정보를 소중히 다루며, 관련 법령을 준수합니다.\n\n### 1. 개인정보의 수집 및 이용 목적\n본 서비스는 별도의 회원가입 없이 이용 가능하며, 어떠한 개인정보도 서버에 저장하지 않습니다. 단, 서비스 개선을 위해 익명의 통계 데이터(접속 로그 등)를 수집할 수 있습니다.\n\n### 2. 제3자 제공 여부\n본 서비스는 사용자의 개인정보를 제3자에게 제공하지 않습니다.\n\n### 3. 개인정보의 파기\n수집된 익명 통계 데이터는 목적 달성 후 지체 없이 파기합니다.\n\n### 4. 문의처\n개인정보와 관련하여 문의사항이 있으신 경우 아래 메일로 연락 주시기 바랍니다.\nEmail: mysticodoi@gmail.com",
+    "en": "## Privacy Policy\n\nEastFever (hereinafter 'the Service') values your personal information and complies with relevant laws.\n\n### 1. Purpose of Collection and Use\nThe Service can be used without registration and does not store any personal information on the server. However, anonymous statistical data (access logs, etc.) may be collected to improve the service.\n\n### 2. Provision to Third Parties\nThe Service does not provide your personal information to third parties.\n\n### 3. Destruction of Personal Information\nCollected anonymous statistical data is destroyed without delay after the purpose is achieved.\n\n### 4. Contact\nIf you have any questions regarding privacy, please contact us at the email below.\nEmail: mysticodoi@gmail.com",
+    "ja": "## 個人情報処理方針\n\nイーストフィーバー（以下「本サービス」）は、お客様の個人情報を大切에扱い, 관련 법령을 준수합니다.\n\n### 1. 개인정보의 수집 및 이용 목적\n본 서비스는 회원가입 없이 이용 가능하며, 어떤 개인정보도 서버에 저장하지 않습니다. 단, 서비스 개선을 위해 익명의 통계 데이터(접속 로그 등)를 수집할 수 있습니다.\n\n### 2. 제3자 제공 여부\n본 서비스는 사용자의 개인정보를 제3자에게 제공하지 않습니다.\n\n### 3. 개인정보의 파기\n수집된 익명 통계 데이터는 목적 달성 후 지체 없이 파기됩니다.\n\n### 4. 문의처\n개인정보와 관련하여 문의사항이 있으시면 아래 메일로 연락 주시기 바랍니다.\nEmail: mysticodoi@gmail.com"
+  }
+}
