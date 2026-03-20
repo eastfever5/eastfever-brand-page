@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post - EastFever</title>
+    <meta name="description" content="이스트피버(EastFever)의 블로그 포스트입니다.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/blog.css?v=5">
+    <link rel="stylesheet" href="css/mobile.css?v=5" media="screen and (max-width: 767px)">
+</head>
+<body>
+    <header id="header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo"><a href="/" class="logo-link">EastFever</a></div>
+                <nav class="nav-menu">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/about/" class="nav-link">About</a>
+                    <a href="/blog.html" class="nav-link active">Dev Story</a>
+                </nav>
+                <a href="mailto:mysticodoi@gmail.com" class="header-email">mysticodoi@gmail.com</a>
+            </div>
+            <div class="lang-selector">
+                <button id="lang-btn" class="lang-btn">
+                    <span class="lang-icon">🌐</span>
+                    <span id="current-lang">한국어</span>
+                    <span class="arrow">▾</span>
+                </button>
+                <ul id="lang-dropdown" class="lang-dropdown hidden">
+                    <li data-lang="ko">한국어</li>
+                    <li data-lang="en">English</li>
+                    <li data-lang="ja">日本語</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="post-container">
+        <article class="post-content">
+            <div class="post-header-area">
+                <nav class="breadcrumbs">
+                    <a href="/">Home</a> <span class="breadcrumb-sep">&gt;</span> <a href="/blog.html">Dev Story</a> <span class="breadcrumb-sep">&gt;</span> <span id="breadcrumb-title">...</span>
+                </nav>
+                <span id="post-category" class="post-category">...</span>
+                <h1 id="post-title" class="post-title">포스트를 불러오는 중...</h1>
+                <div class="post-meta">
+                    <span id="post-date" class="post-date"></span>
+                </div>
+            </div>
+
+            <div id="post-body" class="markdown-body">
+                <!-- 마크다운 렌더링 결과가 이곳에 삽입됩니다. -->
+            </div>
+
+            <div class="back-to-list">
+                <a href="blog.html" class="back-link">
+                    <span>←</span> 블로그 목록으로 돌아가기
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="/terms.html" class="footer-link-text">이용약관</a>
+                <span class="footer-divider">|</span>
+                <a href="/privacy.html" class="footer-link-text">개인정보처리방침</a>
+            </div>
+            <p class="copyright">&copy; 2026 EastFever. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/data-loader.js?v=5"></script>
+    <script src="js/i18n.js?v=5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize i18n
+            const data = await window.dataLoader.load();
+            if (data) window.efI18n.updateUI();
+
+            // Setup language dropdown
+            const langBtn = document.getElementById('lang-btn');
+            const langDropdown = document.getElementById('lang-dropdown');
+            if (langBtn) {
+                langBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    langDropdown.classList.toggle('hidden');
+                });
+            }
+            document.querySelectorAll('#lang-dropdown li').forEach(item => {
+                item.addEventListener('click', () => {
+                    const lang = item.getAttribute('data-lang');
+                    window.efI18n.setLanguage(lang);
+                    langDropdown.classList.add('hidden');
+                });
+            });
+            document.addEventListener('click', () => {
+                if (langDropdown) langDropdown.classList.add('hidden');
+            });
+
+            const params = new URLSearchParams(window.location.search);
+            const postId = params.get('id');
+
+            if (!postId) {
+                window.location.href = 'blog.html';
+                return;
+            }
+
+            try {
+                // 1. 메타데이터 로드
+                const metaResponse = await fetch('data/posts.json');
+                const metaData = await metaResponse.json();
+                const postInfo = metaData.posts.find(p => p.id == postId);
+
+                if (!postInfo) throw new Error('포스트 정보를 찾을 수 없습니다.');
+
+                // 2. 제목 및 메타 설정 (SEO)
+                document.title = `${postInfo.title} - EastFever`;
+                document.getElementById('breadcrumb-title').textContent = postInfo.title;
+                document.getElementById('post-title').textContent = postInfo.title;
+                document.getElementById('post-category').textContent = postInfo.category;
+                document.getElementById('post-date').textContent = postInfo.date;
+                
+                // Meta description update
+                const metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc) metaDesc.setAttribute('content', postInfo.summary);
+
+                // 3. 마크다운 파일 로드
+                const contentResponse = await fetch(`posts/${postInfo.file}?v=${new Date().getTime()}`);
+                if (!contentResponse.ok) throw new Error('콘텐츠 파일을 로드할 수 없습니다.');
+                let markdown = await contentResponse.text();
+
+                // Frontmatter 제거 (--- ... ---)
+                markdown = markdown.replace(/^---[\s\S]*?---/, '').trim();
+
+                // 본문 내 중복 제목 (# 제목) 제거 - 여러 줄에 걸친 공백 및 개행 고려
+                markdown = markdown.replace(/^(\s*#\s+[^\r\n]*)/, '').trim();
+
+                // 4. 렌더링
+                const htmlContent = marked.parse(markdown);
+                const postBody = document.getElementById('post-body');
+                postBody.innerHTML = htmlContent;
+
+                // 상단으로 스크롤
+                window.scrollTo(0, 0);
+
+            } catch (error) {
+                console.error('Error loading post:', error);
+                document.getElementById('post-title').textContent = '콘텐츠 로드 실패';
+                document.getElementById('post-body').innerHTML = '<p>요청하신 포스트를 불러오는 중에 문제가 발생했습니다.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

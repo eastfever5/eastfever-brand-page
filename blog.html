@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Story - EastFever</title>
+    <meta name="description" content="이스트피버(EastFever)의 개발 이야기와 프로젝트 후기를 담은 블로그입니다.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css?v=6">
+    <link rel="stylesheet" href="css/blog.css?v=6">
+    <link rel="stylesheet" href="css/mobile.css?v=6" media="screen and (max-width: 767px)">
+</head>
+
+<body>
+    <header id="header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo"><a href="/" class="logo-link">EastFever</a></div>
+                <nav class="nav-menu">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/about/" class="nav-link">About</a>
+                    <a href="/blog.html" class="nav-link active">Dev Story</a>
+                </nav>
+                <a href="mailto:mysticodoi@gmail.com" class="header-email">mysticodoi@gmail.com</a>
+            </div>
+            <div class="lang-selector">
+                <button id="lang-btn" class="lang-btn">
+                    <span class="lang-icon">🌐</span>
+                    <span id="current-lang">한국어</span>
+                    <span class="arrow">▾</span>
+                </button>
+                <ul id="lang-dropdown" class="lang-dropdown hidden">
+                    <li data-lang="ko">한국어</li>
+                    <li data-lang="en">English</li>
+                    <li data-lang="ja">日本語</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="blog-container">
+        <div class="blog-header">
+            <h1 class="blog-title">Dev Story</h1>
+            <p class="blog-subtitle">개발 여정과 기술적 고민, 일상의 기록들</p>
+        </div>
+
+        <nav class="category-filter">
+            <button class="filter-btn active" data-category="all">전체</button>
+            <button class="filter-btn" data-category="AI">AI</button>
+            <button class="filter-btn" data-category="바이브개발">바이브개발</button>
+            <button class="filter-btn" data-category="개발Tips">개발Tips</button>
+            <button class="filter-btn" data-category="강의">강의</button>
+            <button class="filter-btn" data-category="기타">기타</button>
+        </nav>
+
+        <section id="blog-grid" class="blog-grid">
+            <!-- 블로그 카드가 이곳에 동적으로 삽입됩니다. -->
+            <p class="loading-msg">포스트를 불러오는 중입니다...</p>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="/terms.html" class="footer-link-text">이용약관</a>
+                <span class="footer-divider">|</span>
+                <a href="/privacy.html" class="footer-link-text">개인정보처리방침</a>
+            </div>
+            <p class="copyright">&copy; 2026 EastFever. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/data-loader.js?v=5"></script>
+    <script src="js/i18n.js?v=5"></script>
+    <script src="js/blog.js?v=5"></script>
+    <script>
+        // Initialize i18n
+        document.addEventListener('DOMContentLoaded', async () => {
+            const data = await window.dataLoader.load();
+            if (data) window.efI18n.updateUI();
+
+            // Setup language dropdown for this page
+            const langBtn = document.getElementById('lang-btn');
+            const langDropdown = document.getElementById('lang-dropdown');
+            if (langBtn) {
+                langBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    langDropdown.classList.toggle('hidden');
+                });
+            }
+            document.querySelectorAll('#lang-dropdown li').forEach(item => {
+                item.addEventListener('click', () => {
+                    const lang = item.getAttribute('data-lang');
+                    window.efI18n.setLanguage(lang);
+                    langDropdown.classList.add('hidden');
+                });
+            });
+            document.addEventListener('click', () => {
+                if (langDropdown) langDropdown.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+
+</html>

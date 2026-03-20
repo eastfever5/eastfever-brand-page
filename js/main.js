@@ -12,7 +12,17 @@ class App {
         // 2. i18n Initialization (handled by instance creation, but need updateUI)
         window.efI18n.updateUI();
 
-        // 3. Event Listeners
+        // 3. Force Component Rendering if not already done by i18n
+        if (window.componentRenderer) {
+            console.log('Main: Rendering components...');
+            window.componentRenderer.renderMarquee();
+            window.componentRenderer.renderServices();
+            window.componentRenderer.renderSNS();
+        } else {
+            console.error('Main: componentRenderer not found!');
+        }
+
+        // 4. Event Listeners
         this.setupEventListeners();
 
         // 4. Visual Effects
@@ -56,10 +66,17 @@ class App {
         let i = 0;
         const type = () => {
             if (i < text.length) {
+                // Check for <br>
                 if (text.substring(i, i + 4) === '<br>') {
                     subTextElement.innerHTML += '<br>';
                     i += 4;
-                } else {
+                } 
+                // Check for &nbsp;
+                else if (text.substring(i, i + 6) === '&nbsp;') {
+                    subTextElement.innerHTML += '&nbsp;';
+                    i += 6;
+                }
+                else {
                     subTextElement.innerHTML += text.charAt(i);
                     i++;
                 }
@@ -70,4 +87,6 @@ class App {
     }
 }
 
-window.mainApp = new App();
+document.addEventListener('DOMContentLoaded', () => {
+    window.mainApp = new App();
+});

@@ -61,26 +61,42 @@ class I18n {
         if (ogLocale) ogLocale.setAttribute('content', this.lang === 'ko' ? 'ko_KR' : (this.lang === 'ja' ? 'ja_JP' : 'en_US'));
 
         // Header
-        document.getElementById('current-lang').textContent = this.getCurrentLangName();
+        const path = window.location.pathname;
+        const isKoreanOnlyPage = path.includes('/about/') || path.includes('blog.html') || path.includes('post.html');
+        const langEl = document.getElementById('current-lang');
+        const langBtn = document.getElementById('lang-btn');
+        if (langEl) {
+            langEl.textContent = isKoreanOnlyPage ? 'Korean Only' : this.getCurrentLangName();
+            if (isKoreanOnlyPage && langBtn) {
+                langBtn.style.pointerEvents = 'none';
+                const arrow = langBtn.querySelector('.arrow');
+                if (arrow) arrow.style.display = 'none';
+            }
+        }
 
         // Hero
-        document.getElementById('hero-main-text').textContent = this.t('hero.mainText');
+        const heroMain = document.getElementById('hero-main-text');
+        if (heroMain) heroMain.textContent = this.t('hero.mainText');
         
         // Hero Sub - Main handles typing effect
         if (window.mainApp) window.mainApp.startTypingEffect();
-        
-
 
         // Section Titles
-        document.getElementById('title-webapps').textContent = this.t('sections.webapps');
-        document.getElementById('title-games').textContent = this.t('sections.games');
-        document.getElementById('title-sns').textContent = this.t('sections.sns');
-        document.getElementById('title-contact').textContent = this.t('sections.contact');
+        const sections = ['webapps', 'games', 'sns', 'contact'];
+        sections.forEach(s => {
+            const el = document.getElementById(`title-${s}`);
+            if (el) el.textContent = this.t(`sections.${s}`);
+        });
 
         // Common Buttons
-        document.getElementById('privacy-btn').textContent = this.t('common.privacy');
-        document.getElementById('privacy-modal-title').textContent = this.t('common.privacy');
-        document.getElementById('modal-confirm').textContent = this.t('common.close');
+        const privacyBtn = document.getElementById('privacy-btn');
+        if (privacyBtn) privacyBtn.textContent = this.t('common.privacy');
+
+        const privacyModalTitle = document.getElementById('privacy-modal-title');
+        if (privacyModalTitle) privacyModalTitle.textContent = this.t('common.privacy');
+
+        const modalConfirm = document.getElementById('modal-confirm');
+        if (modalConfirm) modalConfirm.textContent = this.t('common.close');
 
         // Components
         if (window.componentRenderer) {

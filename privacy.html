@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인정보처리방침 - EastFever</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/blog.css">
+    <link rel="stylesheet" href="css/mobile.css" media="screen and (max-width: 767px)">
+    <style>
+        .legal-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10rem 2rem 4rem;
+        }
+        .legal-content {
+            background: white;
+            padding: 3.5rem;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .legal-content h2 { margin-top: 2rem; margin-bottom: 1rem; color: var(--text-main); font-size: 1.5rem; }
+        .legal-content h3 { margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-main); font-size: 1.25rem; }
+        .legal-content p { margin-bottom: 1rem; color: #334155; line-height: 1.7; }
+        @media (max-width: 767px) {
+            .legal-container { padding-top: 8rem; }
+            .legal-content { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo"><a href="/" class="logo-link">EastFever</a></div>
+                <nav class="nav-menu">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/about/" class="nav-link">About</a>
+                    <a href="/blog.html" class="nav-link">Dev Story</a>
+                </nav>
+                <a href="mailto:mysticodoi@gmail.com" class="header-email">mysticodoi@gmail.com</a>
+            </div>
+            <div class="lang-selector">
+                <button id="lang-btn" class="lang-btn">
+                    <span class="lang-icon">🌐</span>
+                    <span id="current-lang">한국어</span>
+                    <span class="arrow">▾</span>
+                </button>
+                <ul id="lang-dropdown" class="lang-dropdown hidden">
+                    <li data-lang="ko">한국어</li>
+                    <li data-lang="en">English</li>
+                    <li data-lang="ja">日本語</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="legal-container">
+        <article class="legal-content">
+            <h1>개인정보처리방침</h1>
+            <p>이스트피버(이하 '본 서비스')는 사용자의 개인정보를 소중히 다루며, 관련 법령을 준수합니다.</p>
+
+            <h2>1. 개인정보의 수집 및 이용 목적</h2>
+            <p>본 서비스는 별도의 회원가입 없이 이용 가능하며, 어떠한 개인정보도 서버에 저장하지 않습니다. 단, 서비스 개선을 위해 익명의 통계 데이터(접속 로그 등)를 수집할 수 있습니다.</p>
+
+            <h2>2. 제3자 제공 여부</h2>
+            <p>본 서비스는 사용자의 개인정보를 제3자에게 제공하지 않습니다.</p>
+
+            <h2>3. 개인정보의 파기</h2>
+            <p>수집된 익명 통계 데이터는 목적 달성 후 지체 없이 파기합니다.</p>
+
+            <h2>4. 문의처</h2>
+            <p>개인정보와 관련하여 문의사항이 있으신 경우 아래 메일로 연락 주시기 바랍니다.</p>
+            <p>Email: <a href="mailto:mysticodoi@gmail.com">mysticodoi@gmail.com</a></p>
+        </article>
+    </main>
+
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="/terms.html" class="footer-link-text">이용약관</a>
+                <span class="footer-divider">|</span>
+                <a href="/privacy.html" class="footer-link-text">개인정보처리방침</a>
+            </div>
+            <p class="copyright">&copy; 2026 EastFever. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
