@@ -65,12 +65,22 @@ class I18n {
         const isKoreanOnlyPage = path.includes('/about/') || path.includes('blog.html') || path.includes('post.html');
         const langEl = document.getElementById('current-lang');
         const langBtn = document.getElementById('lang-btn');
-        if (langEl) {
-            langEl.textContent = isKoreanOnlyPage ? 'Korean Only' : this.getCurrentLangName();
-            if (isKoreanOnlyPage && langBtn) {
+        
+        if (langEl && langBtn) {
+            if (isKoreanOnlyPage) {
+                langEl.textContent = 'Korean Only';
                 langBtn.style.pointerEvents = 'none';
+                langBtn.style.opacity = '0.7';
+                langBtn.title = '이 페이지는 한국어만 지원합니다.';
                 const arrow = langBtn.querySelector('.arrow');
                 if (arrow) arrow.style.display = 'none';
+            } else {
+                langEl.textContent = this.getCurrentLangName();
+                langBtn.style.pointerEvents = 'auto';
+                langBtn.style.opacity = '1';
+                langBtn.title = '';
+                const arrow = langBtn.querySelector('.arrow');
+                if (arrow) arrow.style.display = 'inline-block';
             }
         }
 
