@@ -51,13 +51,18 @@ class App {
         const text = window.efI18n.t('hero.subText');
         
         if (this.typingTimeout) clearTimeout(this.typingTimeout);
-        subTextElement.textContent = '';
+        subTextElement.innerHTML = '';
         
         let i = 0;
         const type = () => {
             if (i < text.length) {
-                subTextElement.textContent += text.charAt(i);
-                i++;
+                if (text.substring(i, i + 4) === '<br>') {
+                    subTextElement.innerHTML += '<br>';
+                    i += 4;
+                } else {
+                    subTextElement.innerHTML += text.charAt(i);
+                    i++;
+                }
                 this.typingTimeout = setTimeout(type, 50);
             }
         };

@@ -79,7 +79,7 @@ header {
     background: white;
     border: 1px solid #e2e8f0;
     padding: 0.5rem 1rem;
-    border-radius: 9999px;
+    border-radius: 0.75rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -164,6 +164,12 @@ header {
 .hero-sub-text {
     font-size: 1.25rem;
     color: var(--text-muted);
+}
+
+@media (min-width: 768px) {
+    .hero-sub-text br {
+        display: none;
+    }
 }
 
 /* Marquee */
@@ -467,6 +473,33 @@ footer {
     .hero-content h1 { font-size: 2.5rem; }
     .section-container { padding: 2rem 1rem; }
     .service-grid { grid-template-columns: 1fr; }
+
+    .header-container {
+        padding: 0.75rem 1rem;
+    }
+
+    .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.125rem;
+    }
+    
+    .header-email {
+        display: block;
+        font-size: 0.75rem;
+        margin-top: -0.25rem;
+    }
+
+    .logo {
+        font-size: 1.25rem;
+        line-height: 1.2;
+    }
+
+    .lang-btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8125rem;
+        border-radius: 0.625rem; /* Slightly smaller radius for small buttons */
+    }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
