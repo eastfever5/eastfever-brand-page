@@ -86,7 +86,8 @@ class I18n {
 
         // Hero
         const heroMain = document.getElementById('hero-main-text');
-        if (heroMain) heroMain.textContent = this.t('hero.mainText');
+        if (heroMain) heroMain.innerHTML = this.t('hero.mainText');
+
         
         // Hero Sub - Main handles typing effect
         if (window.mainApp) window.mainApp.startTypingEffect();
