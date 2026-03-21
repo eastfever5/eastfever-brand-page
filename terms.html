@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이용약관 - EastFever</title>
+    <meta name="description" content="이스트피버(EastFever)의 이용약관입니다.">
     
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="이용약관 - EastFever">
+    <meta property="og:description" content="이스트피버(EastFever)의 이용약관 및 서비스 이용 안내입니다.">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     
     <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/blog.css">
-    <link rel="stylesheet" href="css/mobile.css" media="screen and (max-width: 767px)">
+    <link rel="stylesheet" href="css/style.css?v=14">
+    <link rel="stylesheet" href="css/blog.css?v=14">
+    <link rel="stylesheet" href="css/mobile.css?v=14" media="screen and (max-width: 767px)">
     <style>
         .legal-container {
             max-width: 800px;
@@ -40,9 +45,9 @@
             <div class="header-left">
                 <div class="logo"><a href="/" class="logo-link">EastFever</a></div>
                 <nav class="nav-menu">
-                    <a href="/" class="nav-link">Home</a>
-                    <a href="/about/" class="nav-link">About</a>
-                    <a href="/blog.html" class="nav-link">Dev Story</a>
+                    <a href="/" class="nav-link" id="nav-home">Home</a>
+                    <a href="/about/" class="nav-link" id="nav-about">About</a>
+                    <a href="/blog.html" class="nav-link" id="nav-blog">Dev Story</a>
                 </nav>
                 <a href="mailto:mysticodoi@gmail.com" class="header-email">mysticodoi@gmail.com</a>
             </div>
@@ -63,39 +68,32 @@
 
     <main class="legal-container">
         <article class="legal-content">
-            <h1>이용약관</h1>
-            <p>본 약관은 이스트피버(이하 '회사')가 제공하는 웹사이트 및 관련 서비스(이하 '서비스')의 이용 조건 및 절차에 관한 기본적인 사항을 규정함을 목적으로 합니다.</p>
-
-            <h2>1. 서비스의 목적</h2>
-            <p>이스트피버는 개인 개발자의 프로젝트 소개, 기술 블로그 운영 및 관련 정보를 제공하는 브랜드 페이지입니다.</p>
-
-            <h2>2. 이용자의 의무</h2>
-            <p>이용자는 본 서비스를 이용함에 있어 관계 법령 및 본 약관의 규정을 준수해야 하며, 타인의 권리를 침해하거나 서비스의 정상적인 운영을 방해하는 행위를 해서는 안 됩니다.</p>
-
-            <h2>3. 콘텐츠 저작권</h2>
-            <p>본 서비스에 게재된 모든 콘텐츠(글, 이미지, 디자인 등)의 저작권은 이스트피버에 귀속됩니다. 이용자는 회사의 사전 동의 없이 콘텐츠를 무단으로 복제, 배포 또는 상업적으로 이용할 수 없습니다.</p>
-
-            <h2>4. 면책 조항</h2>
-            <p>회사는 서비스 내에서 제공되는 정보의 정확성이나 신뢰성에 대해 보증하지 않으며, 서비스 이용 중 발생한 직접적/간접적 손해에 대해 책임을 지지 않습니다. 특히 AI를 통해 생성된 콘텐츠는 참고용으로만 사용하시기 바랍니다.</p>
-
-            <h2>5. 약관의 변경</h2>
-            <p>회사는 필요한 경우 본 약관을 변경할 수 있으며, 변경된 약관은 서비스 내에 공지함으로써 효력이 발생합니다.</p>
-
-            <h2>6. 문의처</h2>
-            <p>서비스 이용 및 약관과 관련한 문의는 아래 메일로 연락 주시기 바랍니다.</p>
-            <p>Email: <a href="mailto:mysticodoi@gmail.com">mysticodoi@gmail.com</a></p>
+            <h1 id="legal-title">이용약관</h1>
+            <div id="legal-body" class="markdown-body">
+                <p>로딩 중...</p>
+            </div>
         </article>
     </main>
 
     <footer id="footer">
         <div class="footer-container">
             <div class="footer-links">
-                <a href="/terms.html" class="footer-link-text">이용약관</a>
+                <a href="/terms.html" class="footer-link-text" id="footer-terms">이용약관</a>
                 <span class="footer-divider">|</span>
-                <a href="/privacy.html" class="footer-link-text">개인정보처리방침</a>
+                <a href="/privacy.html" class="footer-link-text" id="footer-privacy">개인정보처리방침</a>
             </div>
             <p class="copyright">&copy; 2026 EastFever. All rights reserved.</p>
         </div>
     </footer>
+    <!-- Scripts -->
+    <script src="js/data-loader.js?v=14"></script>
+    <script src="js/i18n.js?v=14"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const data = await window.dataLoader.load();
+            if (data) window.efI18n.updateUI();
+        });
+    </script>
 </body>
 </html>

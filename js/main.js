@@ -30,27 +30,7 @@ class App {
     }
 
     setupEventListeners() {
-        const langBtn = document.getElementById('lang-btn');
-        const langDropdown = document.getElementById('lang-dropdown');
-
-        if (langBtn) {
-            langBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                langDropdown.classList.toggle('hidden');
-            });
-        }
-
-        document.querySelectorAll('#lang-dropdown li').forEach(item => {
-            item.addEventListener('click', () => {
-                const lang = item.getAttribute('data-lang');
-                window.efI18n.setLanguage(lang);
-                langDropdown.classList.add('hidden');
-            });
-        });
-
-        document.addEventListener('click', () => {
-            if (langDropdown) langDropdown.classList.add('hidden');
-        });
+        // lang-selector logic moved to i18n.js
     }
 
     startTypingEffect() {

@@ -168,6 +168,23 @@
       "icon": "✍️"
     }
   ],
+  "nav": {
+    "home": {
+      "ko": "Home",
+      "en": "Home",
+      "ja": "ホーム"
+    },
+    "about": {
+      "ko": "About",
+      "en": "About",
+      "ja": "紹介"
+    },
+    "blog": {
+      "ko": "Dev Story",
+      "en": "Dev Story",
+      "ja": "開発ストーリー"
+    }
+  },
   "common": {
     "visit": {
       "ko": "방문하기",
@@ -178,6 +195,11 @@
       "ko": "개인정보보호방침",
       "en": "Privacy Policy",
       "ja": "個人情報保護方針"
+    },
+    "terms": {
+      "ko": "이용약관",
+      "en": "Terms of Service",
+      "ja": "利用規約"
     },
     "close": {
       "ko": "닫기",
@@ -192,12 +214,17 @@
     "developing": {
       "ko": "개발중",
       "en": "In Dev",
-      "ja": "개발중"
+      "ja": "開発中"
     }
   },
   "privacy": {
     "ko": "## 개인정보처리방침\n\n이스트피버(이하 '본 서비스')는 사용자의 개인정보를 소중히 다루며, 관련 법령을 준수합니다.\n\n### 1. 개인정보의 수집 및 이용 목적\n본 서비스는 별도의 회원가입 없이 이용 가능하며, 어떠한 개인정보도 서버에 저장하지 않습니다. 단, 서비스 개선을 위해 익명의 통계 데이터(접속 로그 등)를 수집할 수 있습니다.\n\n### 2. 제3자 제공 여부\n본 서비스는 사용자의 개인정보를 제3자에게 제공하지 않습니다.\n\n### 3. 개인정보의 파기\n수집된 익명 통계 데이터는 목적 달성 후 지체 없이 파기합니다.\n\n### 4. 문의처\n개인정보와 관련하여 문의사항이 있으신 경우 아래 메일로 연락 주시기 바랍니다.\nEmail: mysticodoi@gmail.com",
     "en": "## Privacy Policy\n\nEastFever (hereinafter 'the Service') values your personal information and complies with relevant laws.\n\n### 1. Purpose of Collection and Use\nThe Service can be used without registration and does not store any personal information on the server. However, anonymous statistical data (access logs, etc.) may be collected to improve the service.\n\n### 2. Provision to Third Parties\nThe Service does not provide your personal information to third parties.\n\n### 3. Destruction of Personal Information\nCollected anonymous statistical data is destroyed without delay after the purpose is achieved.\n\n### 4. Contact\nIf you have any questions regarding privacy, please contact us at the email below.\nEmail: mysticodoi@gmail.com",
-    "ja": "## 個人情報処理方針\n\nイーストフィーバー（以下「本サービス」）は、お客様の個人情報を大切에扱い, 관련 법령을 준수합니다.\n\n### 1. 개인정보의 수집 및 이용 목적\n본 서비스는 회원가입 없이 이용 가능하며, 어떤 개인정보도 서버에 저장하지 않습니다. 단, 서비스 개선을 위해 익명의 통계 데이터(접속 로그 등)를 수집할 수 있습니다.\n\n### 2. 제3자 제공 여부\n본 서비스는 사용자의 개인정보를 제3자에게 제공하지 않습니다.\n\n### 3. 개인정보의 파기\n수집된 익명 통계 데이터는 목적 달성 후 지체 없이 파기됩니다.\n\n### 4. 문의처\n개인정보와 관련하여 문의사항이 있으시면 아래 메일로 연락 주시기 바랍니다.\nEmail: mysticodoi@gmail.com"
+    "ja": "## 個人情報処理方針\n\nイーストフィーバー（以下「本サービス」）は、お客様の個人情報を大切に扱い、関連法令を遵守します。\n\n### 1. 個人情報の収集および利用目的\n本サービスは、別途の会員登録なしで利用可能であり、いかなる個人情報もサーバーに保存しません。ただし、サービス改善のために匿名の統計データ（接続ログなど）を収集することがあります。\n\n### 2. 第三者への提供\n本サービスは、お客様の個人情報を第三者に提供しません。\n\n### 3. 個人情報の破棄\n収集された匿名の統計データは、目的達成後、遅滞なく破棄します。\n\n### 4. お問い合わせ\n個人情報に関するお問い合わせは、以下のメールアドレスまでご連絡ください。\nEmail: mysticodoi@gmail.com"
+  },
+  "terms": {
+    "ko": "## 이용약관\n\n본 약관은 이스트피버(이하 '회사')가 제공하는 웹사이트 및 관련 서비스(이하 '서비스')의 이용 조건 및 절차에 관한 기본적인 사항을 규정함을 목적으로 합니다.\n\n### 1. 서비스의 목적\n이스트피버는 개인 개발자의 프로젝트 소개, 기술 블로그 운영 및 관련 정보를 제공하는 브랜드 페이지입니다.\n\n### 2. 이용자의 의무\n이용자는 본 서비스를 이용함에 있어 관계 법령 및 본 약관의 규정을 준수해야 하며, 타인의 권리를 침해하거나 서비스의 정상적인 운영을 방해하는 행위를 해서는 안 됩니다.\n\n### 3. 콘텐츠 저작권\n본 서비스에 게재된 모든 콘텐츠(글, 이미지, 디자인 등)의 저작권은 이스트피버에 귀속됩니다. 이용자는 회사의 사전 동의 없이 콘텐츠를 무단으로 복제, 배포 또는 상업적으로 이용할 수 없습니다.\n\n### 4. 면책 조항\n회사는 서비스 내에서 제공되는 정보의 정확성이나 신뢰성에 대해 보증하지 않으며, 서비스 이용 중 발생한 직접적/간접적 손해에 대해 책임을 지지 않습니다. 특히 AI를 통해 생성된 콘텐츠는 참고용으로만 사용하시기 바랍니다.\n\n### 5. 약관의 변경\n회사는 필요한 경우 본 약관을 변경할 수 있으며, 변경된 약관은 서비스 내에 공지함으로써 효력이 발생합니다.\n\n### 6. 문의처\n서비스 이용 및 약관과 관련한 문의는 아래 메일로 연락 주시기 바랍니다.\nEmail: mysticodoi@gmail.com",
+    "en": "## Terms of Service\n\nThese terms aim to define the basic conditions and procedures for using the website and related services (hereinafter 'the Service') provided by EastFever (hereinafter 'the Company').\n\n### 1. Purpose of Service\nEastFever is a brand page providing project introductions, technical blogs, and related information from an individual developer.\n\n### 2. User Obligations\nUsers must comply with relevant laws and these terms when using the Service and must not infringe upon the rights of others or interfere with the normal operation of the Service.\n\n### 3. Content Copyright\nCopyright for all content (text, images, design, etc.) published on the Service belongs to EastFever. Users may not reproduce, distribute, or commercially use the content without prior consent from the Company.\n\n### 4. Disclaimer\nThe Company does not guarantee the accuracy or reliability of information provided within the Service and is not liable for any direct or indirect damages arising from the use of the Service. In particular, contents generated through AI should be used for reference only.\n\n### 5. Changes to Terms\nThe Company may change these terms if necessary, and the changed terms take effect upon notice within the Service.\n\n### 6. Contact\nFor inquiries regarding the use of the Service and terms, please contact us at the email below.\nEmail: mysticodoi@gmail.com",
+    "ja": "## 利用規約\n\n本規約は、イーストフィーバー（以下「会社」）が提供するウェブサイトおよび関連サービス（以下「サービス」）の利用条件および手順に関する基本的な事項を規定することを目的とします。\n\n### 1. サービスの目的\nイーストフィーバーは、個人開発者のプロジェクト紹介、技術ブログ運営、および関連情報を提供するブランドページです。\n\n### 2. 利用者の義務\n利用者は、本サービスを利用するにあたり、関係法令および本規約の規定を遵守しなければならず、他人の権利を侵害したり、サービスの正常な運営を妨げる行為をしてはなりません。\n\n### 3. コンテンツの著作権\n本サービスに掲載されたすべてのコンテンツ（文章、画像、デザインなど）の著作権は、イーストフィーバーに帰属します。利用者は、会社の事前の同意なしにコンテンツを無断で複製、配布、または商業的に利用することはできません。\n\n### 4. 免責事項\n会社は、サービス内で提供される情報の正確性や信頼性について保証せず、サービスの利用中に発生した直接的・間接的な損害について責任を負いません。特に、AIを通じて生成されたコンテンツは参考用としてのみ使用してください。\n\n### 5. 規約の変更\n会社は、必要がある場合、本規約を変更することができ、変更された規約はサービス内で告知することによって効力が発生します。\n\n### 6. お問い合わせ\nサービスの利用および規約に関するお問い合わせは、以下のメールアドレスまでご連絡ください。\nEmail: mysticodoi@gmail.com"
   }
 }
