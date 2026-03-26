@@ -159,6 +159,15 @@
       "category": "바이브개발",
       "date": "2026-03-20",
       "file": "020.md"
+    },
+    {
+      "id": 21,
+      "title": "Antigravity AI 모델별 특징 파헤치기",
+      "summary": "AI 통합 개발 환경 Antigravity에서 제공하는 Gemini, Claude, GPT-OSS 등 각 모델의 장단점을 분석하고 상황별 최적의 활용법을 정리합니다.",
+      "category": "AI",
+      "date": "2026-03-26",
+      "file": "021.md"
     }
   ]
 }
+

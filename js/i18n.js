@@ -92,6 +92,13 @@ class I18n {
 
             const ogLocale = document.querySelector('meta[property="og:locale"]');
             if (ogLocale) ogLocale.setAttribute('content', this.lang === 'ko' ? 'ko_KR' : (this.lang === 'ja' ? 'ja_JP' : 'en_US'));
+
+            // Twitter Cards update
+            const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+            if (twitterTitle) twitterTitle.setAttribute('content', this.t('meta.title'));
+            
+            const twitterDesc = document.querySelector('meta[name="twitter:description"]');
+            if (twitterDesc) twitterDesc.setAttribute('content', this.t('meta.description'));
         } catch (e) { console.error('i18n error in meta tags:', e); }
 
         // 2. Language Selector & Header
