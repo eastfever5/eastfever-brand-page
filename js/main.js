@@ -25,8 +25,67 @@ class App {
         // 4. Event Listeners
         this.setupEventListeners();
 
-        // 4. Visual Effects
+        // 5. Analytics (Sentry)
+        this.setupAnalytics();
+
+        // 6. Visual Effects
         this.startTypingEffect();
+    }
+
+    setupAnalytics() {
+        // 방문 로그 (언어 및 해상도 정보 포함)
+        if (window.Sentry) {
+            window.Sentry.captureMessage(`Page Visit: ${window.efI18n.getLang()}`, {
+                level: 'info',
+                extra: {
+                    referrer: document.referrer,
+                    resolution: `${window.screen.width}x${window.screen.height}`,
+                    language: window.navigator.language
+                }
+            });
+        }
+
+        // 관심도 추적 (이벤트 위임 사용)
+        document.addEventListener('click', (e) => {
+            if (!window.Sentry) return;
+
+            // 앱 방문 버튼 클릭
+            const visitBtn = e.target.closest('.visit-btn');
+            if (visitBtn) {
+                const appId = visitBtn.dataset.id;
+                const card = visitBtn.closest('.service-card');
+                const appName = card ? card.querySelector('.service-name').textContent : 'Unknown';
+                
+                window.Sentry.captureMessage(`App Interest: ${appId}`, {
+                    level: 'info',
+                    tags: { 
+                        action: 'click_visit', 
+                        app_id: appId,
+                        app_name: appName // 참고용 이름 유지
+                    }
+                });
+                return;
+            }
+
+            // SNS 카드 클릭
+            const snsCard = e.target.closest('.sns-card');
+            if (snsCard) {
+                const label = snsCard.querySelector('.sns-label').textContent;
+                window.Sentry.captureMessage(`Connect Interest: ${label}`, {
+                    level: 'info',
+                    tags: { action: 'click_sns', sns_label: label }
+                });
+                return;
+            }
+
+            // 브랜드 로그(홈) 클릭
+            if (e.target.closest('.logo-link')) {
+                window.Sentry.captureMessage('Brand Logo Click', {
+                    level: 'info',
+                    tags: { action: 'click_home' }
+                });
+            }
+        });
     }
 
     setupEventListeners() {

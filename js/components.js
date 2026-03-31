@@ -91,7 +91,7 @@ class ComponentRenderer {
                 </div>
                 <h3 class="service-name">${service.name[lang]}</h3>
                 <p class="service-desc">${service.description[lang]}</p>
-                <a ${buttonAttr} class="visit-btn ${service.type === 'developing' ? 'developing' : ''}">${visitLabel}</a>
+                <a ${buttonAttr} data-id="${service.id}" class="visit-btn ${service.type === 'developing' ? 'developing' : ''}">${visitLabel}</a>
             </div>
         `;
         return div;
