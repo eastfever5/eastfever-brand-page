@@ -1,6 +1,7 @@
 class ComponentRenderer {
     constructor() {
         this.webappList = document.getElementById('webapp-list');
+        this.developingList = document.getElementById('developing-list');
         this.gameList = document.getElementById('game-list');
         this.snsList = document.getElementById('sns-list');
         this.marqueeBar = document.getElementById('marquee-bar');
@@ -39,12 +40,15 @@ class ComponentRenderer {
         const lang = window.efI18n.getLang();
         
         this.webappList.innerHTML = '';
+        if (this.developingList) this.developingList.innerHTML = '';
         this.gameList.innerHTML = '';
 
         data.services.forEach(service => {
             const card = this.createServiceCard(service, lang);
             if (service.type === 'webapp') {
                 this.webappList.appendChild(card);
+            } else if (service.type === 'developing' && this.developingList) {
+                this.developingList.appendChild(card);
             } else if (service.type === 'game') {
                 this.gameList.appendChild(card);
             }
@@ -55,24 +59,39 @@ class ComponentRenderer {
         const div = document.createElement('div');
         div.className = 'service-card';
         
-        const typeLabel = service.type === 'webapp' ? (window.efI18n.t('sections.webapps') || 'Web App') : (window.efI18n.t('sections.games') || 'Game');
+        let typeLabel = '';
+        if (service.type === 'webapp') {
+            typeLabel = window.efI18n.t('sections.webapps') || 'Web App';
+        } else if (service.type === 'developing') {
+            typeLabel = window.efI18n.t('sections.developing') || 'In Development';
+        } else {
+            typeLabel = window.efI18n.t('sections.games') || 'Game';
+        }
+        
         const statusLabel = window.efI18n.t(`common.${service.status}`) || service.status;
-        const visitLabel = window.efI18n.t('common.visit') || 'Visit';
+        let visitLabel = window.efI18n.t('common.visit') || 'Visit';
+        let buttonAttr = `href="${service.url}" target="_blank"`;
+
+        if (service.type === 'developing') {
+            visitLabel = window.efI18n.t('common.developing') || 'In Development';
+            const devMsg = window.efI18n.t('common.dev_msg') || 'Coming Soon';
+            buttonAttr = `href="javascript:void(0)" onclick="window.modalManager.open('${typeLabel}', '${devMsg.replace(/'/g, "\\'")}', 'developing')"`;
+        }
 
         div.innerHTML = `
             <div class="thumb-container">
-                <img src="${service.thumbnail}" alt="${service.name[lang]}" loading="lazy">
+                <img src="${service.thumbnail}?v=18" alt="${service.name[lang]}" loading="lazy">
             </div>
             <div class="card-content">
                 <div class="card-header">
                     <div class="card-tags">
                         <span class="badge badge-type">${typeLabel}</span>
-                        <span class="badge badge-status">${statusLabel}</span>
+                        ${service.type !== 'developing' ? `<span class="badge badge-status">${statusLabel}</span>` : ''}
                     </div>
                 </div>
                 <h3 class="service-name">${service.name[lang]}</h3>
                 <p class="service-desc">${service.description[lang]}</p>
-                <a href="${service.url}" target="_blank" class="visit-btn">${visitLabel}</a>
+                <a ${buttonAttr} class="visit-btn ${service.type === 'developing' ? 'developing' : ''}">${visitLabel}</a>
             </div>
         `;
         return div;

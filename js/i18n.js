@@ -156,7 +156,7 @@ class I18n {
 
             if (window.mainApp) window.mainApp.startTypingEffect();
 
-            const sections = ['webapps', 'games', 'sns', 'contact'];
+            const sections = ['webapps', 'developing', 'games', 'sns', 'contact'];
             sections.forEach(s => {
                 const el = document.getElementById(`title-${s}`);
                 if (el) el.textContent = this.t(`sections.${s}`);
