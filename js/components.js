@@ -80,7 +80,7 @@ class ComponentRenderer {
 
         div.innerHTML = `
             <div class="thumb-container">
-                <img src="${service.thumbnail}?v=18" alt="${service.name[lang]}" loading="lazy">
+                <img src="${service.thumbnail}?v=19" alt="${service.name[lang]}" loading="lazy">
             </div>
             <div class="card-content">
                 <div class="card-header">
