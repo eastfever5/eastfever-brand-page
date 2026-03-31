@@ -28,6 +28,8 @@
       "#이스트피버",
       "#신묘한만세력",
       "#마훼카",
+      "#인생뽑기",
+      "#이피보드",
       "#HighHigh",
       "#인생낱말찾기",
       "#바이브개발",
@@ -41,6 +43,8 @@
       "#EastFever",
       "#Sinmyo",
       "#MyFavCopy",
+      "#DrawTheLife",
+      "#E-Fi-Board",
       "#HighHigh",
       "#VibeDev",
       "#AIDev",
@@ -52,6 +56,8 @@
       "#イーストフィーバー",
       "#神妙な四柱推命",
       "#マフェカ",
+      "#人生ガチャ",
+      "#イーフィボード",
       "#HighHigh",
       "#AI開発",
       "#VibeDev",
@@ -95,14 +101,14 @@
       "status": "developing",
       "url": "#",
       "name": {
-        "ko": "Draw the Life",
+        "ko": "인생 뽑기",
         "en": "Draw the Life",
-        "ja": "Draw the Life"
+        "ja": "人生ガチャ"
       },
       "description": {
         "ko": "카드 뽑기로 즐기는 인생 시뮬레이션",
         "en": "Life simulation game with card drawing",
-        "ja": "カード引きで楽しむ人生シミュレーション"
+        "ja": "人生ガチャカードゲーム"
       },
       "thumbnail": "assets/draw-the-life.webp"
     },
@@ -112,7 +118,7 @@
       "status": "developing",
       "url": "#",
       "name": {
-        "ko": "E-Fi-Board",
+        "ko": "이피보드",
         "en": "E-Fi-Board",
         "ja": "E-Fi-Board"
       },
