@@ -237,6 +237,114 @@ body {
     font-size: 1.125rem;
 }
 
+/* Dev Story Preview */
+.devstories-block {
+    margin-bottom: 4rem;
+}
+
+.devstory-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.devstory-card {
+    min-height: 230px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.25rem;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    text-decoration: none;
+    transition: all var(--transition-speed);
+}
+
+.devstory-media {
+    aspect-ratio: 16 / 9;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.devstory-media img,
+.devstory-media video {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    width: 100%;
+}
+
+.devstory-card:hover .devstory-media img,
+.devstory-card:hover .devstory-media video {
+    transform: scale(1.03);
+}
+
+.devstory-card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 1.5rem;
+}
+
+.devstory-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.12);
+    transform: translateY(-6px);
+}
+
+.devstory-card-meta {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.devstory-category {
+    background: #f1f5f9;
+    border-radius: 9999px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.625rem;
+}
+
+.devstory-date {
+    color: var(--text-muted);
+    font-family: var(--font-outfit);
+    font-size: 0.8125rem;
+}
+
+.devstory-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+}
+
+.devstory-summary {
+    color: var(--text-muted);
+    flex-grow: 1;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+}
+
+.devstory-cta {
+    align-self: flex-start;
+    color: var(--accent-color);
+    font-weight: 800;
+}
+
 /* Service Grid */
 .service-grid {
     display: grid;

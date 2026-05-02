@@ -16,6 +16,7 @@ class App {
         if (window.componentRenderer) {
             console.log('Main: Rendering components...');
             window.componentRenderer.renderMarquee();
+            window.componentRenderer.renderDevStories();
             window.componentRenderer.renderServices();
             window.componentRenderer.renderSNS();
         } else {
@@ -62,6 +63,19 @@ class App {
                         action: 'click_visit', 
                         app_id: appId,
                         app_name: appName // 참고용 이름 유지
+                    }
+                });
+                return;
+            }
+
+            // Dev Story shortcut click
+            const devStoryCard = e.target.closest('.devstory-card');
+            if (devStoryCard) {
+                window.Sentry.captureMessage(`Dev Story Interest: ${devStoryCard.dataset.id}`, {
+                    level: 'info',
+                    tags: {
+                        action: 'click_devstory',
+                        post_id: devStoryCard.dataset.id
                     }
                 });
                 return;

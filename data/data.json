@@ -68,6 +68,11 @@
     ]
   },
   "sections": {
+    "devstories": {
+      "ko": "최신 Dev Story",
+      "en": "Latest Dev Stories",
+      "ja": "最新の開発ストーリー"
+    },
     "webapps": {
       "ko": "웹앱",
       "en": "Web Apps",
@@ -234,6 +239,11 @@
       "ko": "방문하기",
       "en": "Visit",
       "ja": "訪問する"
+    },
+    "readStory": {
+      "ko": "바로 읽기",
+      "en": "Read Story",
+      "ja": "読む"
     },
     "privacy": {
       "ko": "개인정보보호방침",

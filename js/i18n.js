@@ -156,7 +156,7 @@ class I18n {
 
             if (window.mainApp) window.mainApp.startTypingEffect();
 
-            const sections = ['webapps', 'developing', 'games', 'sns', 'contact'];
+            const sections = ['devstories', 'webapps', 'developing', 'games', 'sns', 'contact'];
             sections.forEach(s => {
                 const el = document.getElementById(`title-${s}`);
                 if (el) el.textContent = this.t(`sections.${s}`);
@@ -218,6 +218,7 @@ class I18n {
         try {
             if (window.componentRenderer) {
                 window.componentRenderer.renderMarquee();
+                window.componentRenderer.renderDevStories();
                 window.componentRenderer.renderServices();
                 window.componentRenderer.renderSNS();
             }

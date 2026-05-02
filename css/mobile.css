@@ -77,6 +77,9 @@
 
     .service-grid { grid-template-columns: 1fr !important; }
 
+    .devstory-grid { grid-template-columns: 1fr !important; }
+    .devstory-card { min-height: 0 !important; }
+
     /* Blog Specific */
     .blog-title { font-size: 2rem !important; }
     .blog-grid { grid-template-columns: 1fr !important; }
@@ -139,4 +142,3 @@
         display: block !important;
     }
 }
-
