@@ -100,6 +100,46 @@
     <script src="js/i18n.js?v=21"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+        function upsertJsonLdScript(id, data) {
+            let script = document.getElementById(id);
+            if (!script) {
+                script = document.createElement('script');
+                script.id = id;
+                script.type = 'application/ld+json';
+                document.head.appendChild(script);
+            }
+
+            script.textContent = JSON.stringify(data);
+        }
+
+        function updateBreadcrumbStructuredData(postInfo) {
+            const postUrl = `https://eastfever.com/post.html?id=${encodeURIComponent(postInfo.id)}`;
+            upsertJsonLdScript('breadcrumb-jsonld', {
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    {
+                        '@type': 'ListItem',
+                        position: 1,
+                        name: 'Home',
+                        item: 'https://eastfever.com'
+                    },
+                    {
+                        '@type': 'ListItem',
+                        position: 2,
+                        name: 'Dev Story',
+                        item: 'https://eastfever.com/blog.html'
+                    },
+                    {
+                        '@type': 'ListItem',
+                        position: 3,
+                        name: postInfo.title,
+                        item: postUrl
+                    }
+                ]
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             // Initialize i18n
             const data = await window.dataLoader.load();
@@ -127,6 +167,7 @@
                 document.getElementById('post-title').textContent = postInfo.title;
                 document.getElementById('post-category').textContent = postInfo.category;
                 document.getElementById('post-date').textContent = postInfo.date;
+                updateBreadcrumbStructuredData(postInfo);
                 
                 // Meta description update
                 const metaDesc = document.querySelector('meta[name="description"]');
