@@ -183,7 +183,24 @@
       "category": "AI",
       "date": "2026-04-01",
       "file": "023.md"
+    },
+    {
+      "id": 24,
+      "title": "2026년 바이브로 만든 웹앱에 카카오 광고 붙이기",
+      "summary": "애드센스 심사 탈락 이후 카카오 애드핏을 웹앱에 붙이고 심사를 통과하기까지의 과정을 기록합니다.",
+      "category": "개발Tips",
+      "date": "2026-04-09",
+      "file": "024.md",
+      "source": "https://blog.naver.com/five_east_fever/224246594641"
+    },
+    {
+      "id": 25,
+      "title": "2026년 맥북 코덱스(Codex) 첫 실행 기록",
+      "summary": "ChatGPT Pro 활성화부터 코덱스 실행, 프로젝트 선택, 첫 사용감까지 실제 과정을 정리합니다.",
+      "category": "AI",
+      "date": "2026-04-15",
+      "file": "025.md",
+      "source": "https://blog.naver.com/five_east_fever/224253295142"
     }
   ]
 }
-

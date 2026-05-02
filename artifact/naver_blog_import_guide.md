@@ -52,6 +52,7 @@ python3 ops/import_naver_blog.py 224270816323 --dev-story
 - `posts/NNN.md` 생성
 - `data/posts.json`에 새 항목 추가
 - `source` 필드에 원문 URL 저장
+- 네이버 원격 이미지를 `assets/blog/NNN/`로 내려받고, 본문 이미지 경로를 `/assets/blog/NNN/image-XX.ext`로 교체
 
 카테고리를 명시하려면:
 
@@ -59,11 +60,39 @@ python3 ops/import_naver_blog.py 224270816323 --dev-story
 python3 ops/import_naver_blog.py 224270816323 --dev-story --category 바이브개발
 ```
 
+## 이미지 로컬 제공 규약
+
+- DEV STORY에 등록되는 네이버 블로그 이미지는 외부 원격 URL을 그대로 쓰지 않는다.
+- 포스트 ID가 `024`라면 이미지는 `assets/blog/024/` 폴더에 저장한다.
+- 파일명은 본문 등장 순서대로 `image-01.png`, `image-02.jpg`처럼 2자리 번호를 사용한다.
+- 마크다운에서는 절대 경로 `/assets/blog/024/image-01.png` 형식으로 참조한다.
+- 네이버 이미지 URL이 남아 있는지 `rg -n "mblogthumb|blogthumb|pstatic" posts/NNN.md`로 확인한다.
+- 기존 포스트를 로컬 이미지 방식으로 바꿀 때는 다음 명령을 사용한다.
+
+```bash
+python3 ops/import_naver_blog.py --localize-post posts/024.md
+```
+
+예외적으로 원격 이미지를 유지해야 하는 경우가 아니라면 `--keep-remote-images`는 사용하지 않는다.
+
+## 링크 개행 규약
+
+- 본문에 독립 링크나 링크 카드를 넣을 때는 링크 바로 다음 줄을 빈 줄로 둔다.
+- 네이버 링크 카드처럼 설명문이 이어지는 경우에도 `> [제목](URL)` 다음에 빈 인용 줄 `>`을 한 줄 넣고 설명문을 이어간다.
+- 예시:
+
+```markdown
+> [참고 링크](https://example.com)
+>
+> 링크 설명문
+```
+
 ## 현재 지원 범위
 
 - 텍스트: 문단 줄 단위 변환
-- 이미지: 네이버 공개 이미지 URL을 마크다운 이미지로 변환
-- 링크 카드: 인용 블록 형태로 변환
+- 이미지: 네이버 공개 이미지 URL을 로컬 파일로 내려받고 마크다운 이미지 경로로 변환
+- 이미지 묶음: SmartEditor `se-imageStrip` 이미지도 순서대로 변환
+- 링크 카드: 인용 블록 형태로 변환하되 링크 다음 줄은 비워 둠
 - 영상: 영상 ID placeholder로 보존
 - 구분선: `---`로 변환
 
@@ -72,10 +101,12 @@ python3 ops/import_naver_blog.py 224270816323 --dev-story --category 바이브�
 - 브라우저 위장, 로그인 쿠키 사용, 차단 우회는 하지 않는다.
 - 기본 출력물을 먼저 검토하고 `--dev-story`를 쓰는 흐름을 권장한다.
 - `--dev-story` 실행 전 중복 제목이나 이미 이관한 원문인지 확인한다.
+- DEV STORY 등록 후 네이버 이미지 핫링크가 남아 있으면 완료로 보지 않는다.
 - 카테고리는 현재 DEV STORY 필터인 `AI`, `바이브개발`, `개발Tips`, `강의`, `기타` 중 하나로 정리하는 것이 좋다.
 
 ## 완료 기준
 
 - importer가 공개 모바일 URL에서 원문을 가져온다.
 - 변환 결과가 제목, 날짜, 카테고리, 요약, 원문 URL, 본문을 포함한다.
+- 본문의 이미지는 `assets/blog/NNN/`에 저장된 로컬 파일을 가리킨다.
 - 다음 에이전트가 `.agent/skills/naver-blog-import` 스킬만 보고 같은 절차를 반복할 수 있다.

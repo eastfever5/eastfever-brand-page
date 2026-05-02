@@ -20,13 +20,15 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable
-from urllib.parse import parse_qs, urlparse
+from urllib.error import HTTPError
+from urllib.parse import parse_qs, quote, urlparse, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_BLOG_ID = "five_east_fever"
 DEFAULT_OUTPUT_DIR = ROOT_DIR / "artifact" / "naver-imported"
+LOCAL_IMAGE_ROOT = ROOT_DIR / "assets" / "blog"
 HONEST_USER_AGENT = "eastfever-brand-page-importer/1.0 (+https://eastfever.com)"
 DEV_STORY_CATEGORIES = {"AI", "바이브개발", "개발Tips", "강의", "기타"}
 CATEGORY_MAP = {
@@ -154,6 +156,48 @@ def fetch_html(url: str, timeout: float) -> str:
         return response.read().decode(charset, errors="replace")
 
 
+def request_safe_url(url: str) -> str:
+    parts = urlsplit(url.strip())
+    return urlunsplit(
+        (
+            parts.scheme,
+            parts.netloc,
+            quote(parts.path, safe="/%"),
+            quote(parts.query, safe="=&?/:+,%"),
+            parts.fragment,
+        )
+    )
+
+
+def image_download_candidates(url: str) -> list[str]:
+    candidates = [url]
+    parts = urlsplit(url)
+    if "pstatic.net" in parts.netloc and not parts.query:
+        candidates.extend([f"{url}?type=w800", f"{url}?type=w400"])
+    return candidates
+
+
+def fetch_binary(url: str, timeout: float) -> tuple[bytes, str]:
+    last_error: Exception | None = None
+    for candidate in image_download_candidates(url):
+        try:
+            request = Request(
+                request_safe_url(candidate),
+                headers={"User-Agent": HONEST_USER_AGENT},
+            )
+            with urlopen(request, timeout=timeout, context=ssl_context()) as response:
+                content_type = response.headers.get_content_type()
+                return response.read(), content_type
+        except HTTPError as exc:
+            last_error = exc
+            if exc.code != 404:
+                raise
+
+    if last_error:
+        raise last_error
+    raise ValueError(f"No download candidates for image URL: {url}")
+
+
 def meta_content(page_html: str, property_name: str) -> str:
     pattern = (
         r"<meta\s+property=[\"']"
@@ -214,19 +258,27 @@ def text_lines_from_component(block: str) -> list[str]:
     return lines
 
 
-def image_markdown_from_component(block: str) -> str:
-    match = re.search(r"data-linkdata='([^']*?\"src\"[^']*?)'", block)
-    if not match:
-        return ""
-    data = html.unescape(match.group(1))
-    source_match = re.search(r'"src"\s*:\s*"([^"]+)"', data)
-    if not source_match:
-        return ""
-    alt_match = re.search(r'alt="([^"]*)"', block)
-    alt = html.unescape(alt_match.group(1)).strip() if alt_match else ""
-    alt = alt or "네이버 블로그 이미지"
-    return f"![{alt}]({source_match.group(1)})"
+def image_markdowns_from_component(block: str) -> list[str]:
+    images: list[str] = []
+    seen_sources: set[str] = set()
 
+    for match in re.finditer(r"data-linkdata='([^']*?\"src\"[^']*?)'", block):
+        data = html.unescape(match.group(1))
+        source_match = re.search(r'"src"\s*:\s*"([^"]+)"', data)
+        if not source_match:
+            continue
+
+        source = source_match.group(1)
+        if source in seen_sources:
+            continue
+        seen_sources.add(source)
+
+        alt_match = re.search(r'alt="([^"]*)"', block[match.end() :])
+        alt = html.unescape(alt_match.group(1)).strip() if alt_match else ""
+        alt = alt or "네이버 블로그 이미지"
+        images.append(f"![{alt}]({source})")
+
+    return images
 
 def oglink_markdown_from_component(block: str) -> str:
     link = ""
@@ -247,7 +299,7 @@ def oglink_markdown_from_component(block: str) -> str:
     if not title and not link:
         return ""
     if summary:
-        return f"> [{title}]({link})\n> {summary}"
+        return f"> [{title}]({link})\n>\n> {summary}"
     return f"> [{title}]({link})"
 
 
@@ -274,10 +326,10 @@ def build_markdown_body(container_html: str) -> tuple[str, dict[str, int], list[
             all_text_lines.extend(lines)
             if lines:
                 parts.append("\n".join(lines))
-        elif ctype == "se-image":
-            image = image_markdown_from_component(block)
-            if image:
-                parts.append(image)
+        elif ctype in {"se-image", "se-imageStrip"}:
+            images = image_markdowns_from_component(block)
+            if images:
+                parts.append("\n\n".join(images))
             else:
                 warnings.append("Image component without a parseable source URL was skipped.")
         elif ctype == "se-oglink":
@@ -367,6 +419,64 @@ def safe_filename(value: str, limit: int = 90) -> str:
     return (name[:limit] or "naver-blog-post").rstrip("._ ")
 
 
+def image_extension(url: str, content_type: str) -> str:
+    ext = Path(urlsplit(url).path).suffix.lower()
+    if ext == ".jpeg":
+        return ".jpg"
+    if ext in {".jpg", ".png", ".webp", ".gif"}:
+        return ext
+
+    content_extensions = {
+        "image/jpeg": ".jpg",
+        "image/png": ".png",
+        "image/webp": ".webp",
+        "image/gif": ".gif",
+    }
+    return content_extensions.get(content_type.lower(), ".jpg")
+
+
+def localize_markdown_images(
+    markdown: str,
+    post_id: int,
+    timeout: float,
+    require_all: bool = True,
+) -> tuple[str, list[Path], list[str]]:
+    image_pattern = re.compile(r"!\[([^\]]*)\]\((https?://[^)]+)\)")
+    output_dir = LOCAL_IMAGE_ROOT / f"{post_id:03d}"
+    written: list[Path] = []
+    warnings: list[str] = []
+    url_to_local: dict[str, str] = {}
+    image_index = 0
+
+    def replace(match: re.Match[str]) -> str:
+        nonlocal image_index
+        alt_text, source_url = match.groups()
+
+        if source_url not in url_to_local:
+            image_index += 1
+            try:
+                payload, content_type = fetch_binary(source_url, timeout)
+                output_dir.mkdir(parents=True, exist_ok=True)
+                filename = f"image-{image_index:02d}{image_extension(source_url, content_type)}"
+                output_path = output_dir / filename
+                output_path.write_bytes(payload)
+                written.append(output_path)
+                url_to_local[source_url] = f"/assets/blog/{post_id:03d}/{filename}"
+            except Exception as exc:
+                warnings.append(f"Image download failed: {source_url} ({exc})")
+                url_to_local[source_url] = source_url
+
+        return f"![{alt_text}]({url_to_local[source_url]})"
+
+    localized = image_pattern.sub(replace, markdown)
+    remaining_remote_images = image_pattern.findall(localized)
+    if require_all and remaining_remote_images:
+        failed_urls = ", ".join(url for _, url in remaining_remote_images)
+        raise ValueError(f"Some markdown images still use remote URLs: {failed_urls}")
+
+    return localized, written, warnings
+
+
 def write_artifact(post: ParsedPost, output_dir: Path) -> tuple[Path, Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     base = f"{post.log_no}_{safe_filename(post.title)}"
@@ -404,7 +514,12 @@ def next_dev_story_id(posts_dir: Path, posts_data: dict) -> int:
     return max(ids, default=0) + 1
 
 
-def write_dev_story(post: ParsedPost, force: bool) -> tuple[Path, Path]:
+def write_dev_story(
+    post: ParsedPost,
+    force: bool,
+    local_images: bool,
+    timeout: float,
+) -> tuple[Path, Path, list[Path]]:
     posts_dir = ROOT_DIR / "posts"
     data_path = ROOT_DIR / "data" / "posts.json"
     posts_dir.mkdir(exist_ok=True)
@@ -427,7 +542,18 @@ def write_dev_story(post: ParsedPost, force: bool) -> tuple[Path, Path]:
     if post_path.exists() and not force:
         raise ValueError(f"{post_path} already exists. Use --force to overwrite.")
 
-    post_path.write_text(post.markdown, encoding="utf-8")
+    markdown = post.markdown
+    image_paths: list[Path] = []
+    if local_images:
+        markdown, image_paths, image_warnings = localize_markdown_images(
+            markdown,
+            post_id,
+            timeout,
+            require_all=True,
+        )
+        post.warnings.extend(image_warnings)
+
+    post_path.write_text(markdown, encoding="utf-8")
     posts_data.setdefault("posts", []).append(
         {
             "id": post_id,
@@ -443,14 +569,14 @@ def write_dev_story(post: ParsedPost, force: bool) -> tuple[Path, Path]:
         json.dumps(posts_data, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    return post_path, data_path
+    return post_path, data_path, image_paths
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Import public Naver Blog mobile HTML into markdown."
     )
-    parser.add_argument("source", help="Naver log number or public post URL")
+    parser.add_argument("source", nargs="?", help="Naver log number or public post URL")
     parser.add_argument("--blog-id", default=DEFAULT_BLOG_ID, help="default blog id for numeric sources")
     parser.add_argument("--timeout", type=float, default=15.0, help="network timeout in seconds")
     parser.add_argument("--out", type=Path, help="directory for converted markdown and metadata")
@@ -464,9 +590,61 @@ def main() -> int:
     parser.add_argument("--category", help="override imported category")
     parser.add_argument("--summary", help="override imported summary")
     parser.add_argument("--force", action="store_true", help="allow duplicate or overwrite dev-story output")
+    parser.add_argument(
+        "--keep-remote-images",
+        action="store_true",
+        help="do not download images into assets/blog/NNN when writing a Dev Story post",
+    )
+    parser.add_argument(
+        "--localize-post",
+        type=Path,
+        help="rewrite an existing markdown post so remote image URLs become local assets",
+    )
+    parser.add_argument(
+        "--post-id",
+        type=int,
+        help="post id to use with --localize-post; defaults to numeric markdown filename",
+    )
     args = parser.parse_args()
 
     try:
+        if args.localize_post:
+            post_path = args.localize_post
+            post_id = args.post_id
+            if post_id is None and post_path.stem.isdigit():
+                post_id = int(post_path.stem)
+            if post_id is None:
+                raise ValueError("--post-id is required when --localize-post filename is not numeric")
+
+            markdown = post_path.read_text(encoding="utf-8")
+            markdown, image_paths, warnings = localize_markdown_images(
+                markdown,
+                post_id,
+                args.timeout,
+                require_all=True,
+            )
+            post_path.write_text(markdown, encoding="utf-8")
+            print(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "post": str(post_path),
+                        "postId": post_id,
+                        "warnings": warnings,
+                        "written": [
+                            str(path.relative_to(ROOT_DIR)) if path.is_relative_to(ROOT_DIR) else str(path)
+                            for path in [post_path, *image_paths]
+                        ],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            return 0
+
+        if not args.source:
+            raise ValueError("source is required unless --localize-post is used")
+
         post = parse_post(args.source, args.blog_id, args.timeout)
         if args.title:
             post.title = args.title
@@ -482,8 +660,13 @@ def main() -> int:
             markdown_path, metadata_path = write_artifact(post, args.out or DEFAULT_OUTPUT_DIR)
             written.extend([markdown_path, metadata_path])
         if args.dev_story:
-            post_path, data_path = write_dev_story(post, args.force)
-            written.extend([post_path, data_path])
+            post_path, data_path, image_paths = write_dev_story(
+                post,
+                args.force,
+                local_images=not args.keep_remote_images,
+                timeout=args.timeout,
+            )
+            written.extend([post_path, data_path, *image_paths])
 
         print(
             json.dumps(
