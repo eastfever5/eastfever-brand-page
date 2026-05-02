@@ -1,0 +1,4 @@
+interface:
+  display_name: "Naver Blog Import"
+  short_description: "Import public Naver Blog posts into Dev Story markdown."
+  default_prompt: "Import a public Naver Blog post into Dev Story markdown using the repository importer."
