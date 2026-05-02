@@ -104,7 +104,7 @@
       "id": "draw-the-life",
       "type": "developing",
       "status": "developing",
-      "url": "#",
+      "url": "https://drawlife.eastfever.com",
       "name": {
         "ko": "인생 뽑기",
         "en": "Draw the Life",
@@ -115,7 +115,7 @@
         "en": "Life simulation game with card drawing",
         "ja": "人生ガチャカードゲーム"
       },
-      "thumbnail": "assets/draw-the-life.webp"
+      "thumbnail": "assets/draw-the-life.png"
     },
     {
       "id": "e-fi-board",

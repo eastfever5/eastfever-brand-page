@@ -75,6 +75,26 @@ python3 ops/import_naver_blog.py --localize-post posts/024.md
 
 예외적으로 원격 이미지를 유지해야 하는 경우가 아니라면 `--keep-remote-images`는 사용하지 않는다.
 
+## DEV STORY 썸네일 규약
+
+- 메인 페이지의 Dev Story 카드는 포스트 마크다운에서 썸네일을 결정한다.
+- 우선순위는 frontmatter `thumbnail` 값, `<!-- thumbnail -->` 마킹 다음 이미지, 본문 첫 이미지 순서다.
+- 대표 이미지를 명시하려면 frontmatter에 다음처럼 쓴다.
+
+```yaml
+thumbnail: "/assets/blog/026/image-18.jpg"
+```
+
+- 본문 안에서 대표 이미지를 지정하려면 다음처럼 마킹 바로 다음에 이미지를 둔다.
+
+```markdown
+<!-- thumbnail -->
+
+![대표 이미지](/assets/blog/026/image-18.jpg)
+```
+
+- `thumbnail`도 네이버 원격 URL을 쓰지 않고 `/assets/blog/NNN/...` 로컬 경로를 사용한다.
+
 ## 링크 개행 규약
 
 - 본문에 독립 링크나 링크 카드를 넣을 때는 링크 바로 다음 줄을 빈 줄로 둔다.

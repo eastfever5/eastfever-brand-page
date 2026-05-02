@@ -201,6 +201,15 @@
       "date": "2026-04-15",
       "file": "025.md",
       "source": "https://blog.naver.com/five_east_fever/224253295142"
+    },
+    {
+      "id": 26,
+      "title": "Draw the Life 바이브 웹게임 개발 3주 기록",
+      "summary": "AI 개발 도구를 활용해 Draw the Life 웹게임을 3주 동안 만들며 겪은 변화와 작업 흐름을 정리합니다.",
+      "category": "바이브개발",
+      "date": "2026-04-30",
+      "file": "026.md",
+      "source": "https://blog.naver.com/five_east_fever/224270816323"
     }
   ]
 }

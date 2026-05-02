@@ -66,7 +66,7 @@ class ComponentRenderer {
                     if (!response.ok) throw new Error(`Post request failed: ${response.status}`);
                     return response.text();
                 })
-                .then(markdown => this.extractFirstMedia(markdown, post.file))
+                .then(markdown => this.extractPostThumbnail(markdown, post.file))
                 .catch(error => {
                     console.error(`Error loading dev story media for ${post.file}:`, error);
                     return null;
@@ -80,12 +80,61 @@ class ComponentRenderer {
         return media;
     }
 
-    extractFirstMedia(markdown, postFile) {
-        const content = markdown
+    extractPostThumbnail(markdown, postFile) {
+        const frontmatter = this.extractFrontmatter(markdown);
+        const frontmatterThumbnail = frontmatter.thumbnail;
+        if (frontmatterThumbnail) {
+            return {
+                type: 'image',
+                src: this.resolvePostMediaPath(frontmatterThumbnail, postFile),
+                alt: ''
+            };
+        }
+
+        const content = this.stripPostChrome(markdown);
+        const markerThumbnail = this.extractMarkedThumbnail(content, postFile);
+        if (markerThumbnail) return markerThumbnail;
+
+        return this.extractFirstMedia(content, postFile);
+    }
+
+    extractFrontmatter(markdown) {
+        const match = /^---\s*\n([\s\S]*?)\n---/.exec(markdown);
+        if (!match) return {};
+
+        return match[1].split(/\r?\n/).reduce((data, line) => {
+            const field = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(line);
+            if (!field) return data;
+
+            const key = field[1].trim();
+            let value = field[2].trim();
+            if (
+                (value.startsWith('"') && value.endsWith('"')) ||
+                (value.startsWith("'") && value.endsWith("'"))
+            ) {
+                value = value.slice(1, -1);
+            }
+            data[key] = value;
+            return data;
+        }, {});
+    }
+
+    stripPostChrome(markdown) {
+        return markdown
             .replace(/^---[\s\S]*?---/, '')
             .replace(/^(\s*#\s+[^\r\n]*)/, '')
             .trim();
+    }
 
+    extractMarkedThumbnail(content, postFile) {
+        const markerIndex = content.indexOf('<!-- thumbnail -->');
+        if (markerIndex === -1) return null;
+
+        const markedContent = content.slice(markerIndex + '<!-- thumbnail -->'.length);
+        return this.extractFirstMedia(markedContent, postFile, { imagesOnly: true });
+    }
+
+    extractFirstMedia(content, postFile, options = {}) {
         const mediaPatterns = [
             {
                 type: 'image',
@@ -115,7 +164,11 @@ class ComponentRenderer {
             }
         ];
 
-        const matches = mediaPatterns
+        const allowedPatterns = options.imagesOnly
+            ? mediaPatterns.filter(pattern => pattern.type === 'image')
+            : mediaPatterns;
+
+        const matches = allowedPatterns
             .map(pattern => {
                 const match = pattern.regex.exec(content);
                 if (!match) return null;
@@ -285,10 +338,13 @@ class ComponentRenderer {
         }
         
         const statusLabel = window.efI18n.t(`common.${service.status}`) || service.status;
+        const hasVisitUrl = service.url && service.url !== '#';
+        let isDevelopingButton = false;
         let visitLabel = window.efI18n.t('common.visit') || 'Visit';
-        let buttonAttr = `href="${service.url}" target="_blank"`;
+        let buttonAttr = `href="${service.url}" target="_blank" rel="noopener"`;
 
-        if (service.type === 'developing') {
+        if (service.type === 'developing' && !hasVisitUrl) {
+            isDevelopingButton = true;
             visitLabel = window.efI18n.t('common.developing') || 'In Development';
             const devMsg = window.efI18n.t('common.dev_msg') || 'Coming Soon';
             buttonAttr = `href="javascript:void(0)" onclick="window.modalManager.open('${typeLabel}', '${devMsg.replace(/'/g, "\\'")}', 'developing')"`;
@@ -307,7 +363,7 @@ class ComponentRenderer {
                 </div>
                 <h3 class="service-name">${service.name[lang]}</h3>
                 <p class="service-desc">${service.description[lang]}</p>
-                <a ${buttonAttr} data-id="${service.id}" class="visit-btn ${service.type === 'developing' ? 'developing' : ''}">${visitLabel}</a>
+                <a ${buttonAttr} data-id="${service.id}" class="visit-btn ${isDevelopingButton ? 'developing' : ''}">${visitLabel}</a>
             </div>
         `;
         return div;
