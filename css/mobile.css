@@ -115,6 +115,21 @@
         padding: 2rem 1.25rem !important;
         border-radius: 1rem !important;
     }
+    .markdown-body .og-card {
+        grid-template-columns: 72px minmax(0, 1fr);
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .markdown-body .og-card-image {
+        width: 72px;
+        height: 72px;
+    }
+    .markdown-body .og-card-title {
+        font-size: 0.9375rem;
+    }
+    .markdown-body .og-card-description {
+        font-size: 0.8125rem;
+    }
 
     .blog-card-summary {
         font-size: 0.7em !important;

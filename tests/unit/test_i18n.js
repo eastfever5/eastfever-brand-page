@@ -10,7 +10,7 @@ const html = fs.readFileSync(path.join(rootDir, 'index.html'), 'utf8');
 const i18nCode = fs.readFileSync(path.join(rootDir, 'js/i18n.js'), 'utf8');
 const dataJson = fs.readFileSync(path.join(rootDir, 'data/data.json'), 'utf8');
 
-const dom = new JSDOM(html, { runScripts: "outside-only" });
+const dom = new JSDOM(html, { runScripts: "outside-only", url: "https://eastfever.com/" });
 const { window } = dom;
 global.window = window;
 global.document = window.document;
@@ -40,6 +40,32 @@ try {
         
         window.efI18n.updateUI();
         console.log("UI updated successfully.");
+
+        const expectedTitle = "EastFever - Indie App Lab and Dev Stories";
+        const expectedDescription = "EastFever is an indie app lab sharing web apps, mobile games, and development stories, including Sinmyo-Saju, MyFavCopy, and Draw the Life.";
+        const metaDescription = window.document.querySelector('meta[name="description"]');
+        const canonical = window.document.querySelector('link[rel="canonical"]');
+        const alternateEn = window.document.querySelector('link[rel="alternate"][hreflang="en"]');
+
+        if (window.document.title !== expectedTitle) {
+            throw new Error(`Unexpected title: ${window.document.title}`);
+        }
+
+        if (window.document.documentElement.lang !== 'en') {
+            throw new Error(`Unexpected html lang: ${window.document.documentElement.lang}`);
+        }
+
+        if (!metaDescription || metaDescription.getAttribute('content') !== expectedDescription) {
+            throw new Error('English meta description was not applied.');
+        }
+
+        if (!canonical || canonical.getAttribute('href') !== 'https://eastfever.com/?lang=en') {
+            throw new Error(`Unexpected canonical href: ${canonical && canonical.getAttribute('href')}`);
+        }
+
+        if (!alternateEn || alternateEn.getAttribute('href') !== 'https://eastfever.com/?lang=en') {
+            throw new Error('English hreflang alternate was not applied.');
+        }
         
         console.log("i18n Unit Test: SUCCESS");
     } else {

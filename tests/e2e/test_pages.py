@@ -1,16 +1,19 @@
 import asyncio
 from playwright.async_api import async_playwright
 
-async def test_page(page, url, name):
+async def test_page(page, url, name, selector=None):
     print(f"Testing {name} ({url})...")
     try:
         response = await page.goto(url)
         if response.status != 200:
             print(f"Error: {name} returned status {response.status}")
         await asyncio.sleep(1)
+        if selector:
+            await page.wait_for_selector(selector, timeout=5000)
         print(f"Successfully loaded {name}")
     except Exception as e:
         print(f"Exception during testing {name}: {str(e)}")
+        raise
 
 async def run_all_tests():
     async with async_playwright() as p:
@@ -24,16 +27,17 @@ async def run_all_tests():
         base_url = "http://localhost:8081" # 기본 개발 서버 포트
         
         pages = [
-            ("/", "Home"),
-            ("/about/", "About"),
-            ("/blog.html", "Blog"),
-            ("/terms.html", "Terms"),
-            ("/privacy.html", "Privacy")
+            ("/", "Home", None),
+            ("/about/", "About", None),
+            ("/blog.html", "Blog", None),
+            ("/post.html?id=26", "Post 26", ".og-card"),
+            ("/terms.html", "Terms", None),
+            ("/privacy.html", "Privacy", None)
         ]
 
         print("--- Starting E2E Page Tests ---")
-        for path, name in pages:
-            await test_page(page, f"{base_url}{path}", name)
+        for path, name, selector in pages:
+            await test_page(page, f"{base_url}{path}", name, selector)
         print("--- E2E Page Tests Completed ---")
 
         await browser.close()

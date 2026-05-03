@@ -1,13 +1,20 @@
 class I18n {
     constructor() {
-        this.lang = localStorage.getItem('ef_lang') || 'ko';
         this.supportedLangs = ['ko', 'en', 'ja'];
+        const queryLang = this.getLanguageFromUrl();
+        const savedLang = localStorage.getItem('ef_lang');
+        this.lang = queryLang || (this.supportedLangs.includes(savedLang) ? savedLang : 'ko');
+
+        if (queryLang) {
+            localStorage.setItem('ef_lang', queryLang);
+        }
     }
 
     setLanguage(lang) {
         if (this.supportedLangs.includes(lang)) {
             this.lang = lang;
             localStorage.setItem('ef_lang', lang);
+            this.syncLanguageUrl(lang);
             this.updateUI();
         }
     }
@@ -19,6 +26,174 @@ class I18n {
     getCurrentLangName() {
         const names = { ko: '한국어', en: 'English', ja: '日本語' };
         return names[this.lang];
+    }
+
+    getLanguageFromUrl() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const lang = params.get('lang');
+            return this.supportedLangs.includes(lang) ? lang : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    getPageKey() {
+        const path = window.location.pathname;
+        if (path.includes('privacy.html') || path.includes('/privacy')) return 'privacy';
+        if (path.includes('terms.html') || path.includes('/terms')) return 'terms';
+        if (path.includes('/about/')) return 'about';
+        if (path.includes('blog.html') || path.includes('/blog')) return 'blog';
+        if (path.includes('post.html') || path.includes('/post')) return 'post';
+        return 'home';
+    }
+
+    isKoreanOnlyPage(pageKey = this.getPageKey()) {
+        return ['about', 'blog', 'post'].includes(pageKey);
+    }
+
+    getSeoLang(pageKey = this.getPageKey()) {
+        return this.isKoreanOnlyPage(pageKey) ? 'ko' : this.lang;
+    }
+
+    getLocale(lang) {
+        const locales = { ko: 'ko_KR', en: 'en_US', ja: 'ja_JP' };
+        return locales[lang] || locales.ko;
+    }
+
+    getLocalizedValue(value, lang, fallback = '') {
+        if (!value) return fallback;
+        if (typeof value === 'string') return value;
+        return value[lang] || value.ko || fallback;
+    }
+
+    getPageUrl(pageKey, lang, data) {
+        const baseUrl = ((data.meta && data.meta.baseUrl) || 'https://eastfever.com').replace(/\/$/, '');
+        const pagePaths = {
+            home: '/',
+            privacy: '/privacy.html',
+            terms: '/terms.html',
+            about: '/about/',
+            blog: '/blog.html',
+            post: '/post.html'
+        };
+
+        let url = `${baseUrl}${pagePaths[pageKey] || '/'}`;
+
+        if (pageKey === 'post') {
+            const postId = new URLSearchParams(window.location.search).get('id');
+            return postId ? `${url}?id=${encodeURIComponent(postId)}` : url;
+        }
+
+        if (!this.isKoreanOnlyPage(pageKey) && lang !== 'ko') {
+            url += `?lang=${encodeURIComponent(lang)}`;
+        }
+
+        return url;
+    }
+
+    getPageSeo(data, pageKey, lang) {
+        const meta = data.meta || {};
+        const pageMeta = meta.pages && meta.pages[pageKey] ? meta.pages[pageKey] : {};
+        const title = this.getLocalizedValue(pageMeta.title, lang, this.getLocalizedValue(meta.title, lang, 'EastFever'));
+        const description = this.getLocalizedValue(pageMeta.description, lang, this.getLocalizedValue(meta.description, lang, 'EastFever'));
+
+        return {
+            title,
+            description,
+            image: meta.image || 'https://eastfever.com/assets/og-image-final.webp?v=27',
+            locale: this.getLocale(lang),
+            siteName: meta.siteName || 'EastFever',
+            url: this.getPageUrl(pageKey, lang, data),
+            type: pageKey === 'post' ? 'article' : 'website'
+        };
+    }
+
+    setMeta(kind, key, content) {
+        if (!content) return;
+        let el = document.querySelector(`meta[${kind}="${key}"]`);
+        if (!el) {
+            el = document.createElement('meta');
+            el.setAttribute(kind, key);
+            document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+    }
+
+    setCanonical(url) {
+        let el = document.querySelector('link[rel="canonical"]');
+        if (!el) {
+            el = document.createElement('link');
+            el.setAttribute('rel', 'canonical');
+            document.head.appendChild(el);
+        }
+        el.setAttribute('href', url);
+    }
+
+    updateAlternateLinks(pageKey, data) {
+        document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(link => link.remove());
+
+        const langs = this.isKoreanOnlyPage(pageKey) ? ['ko'] : this.supportedLangs;
+        langs.forEach(lang => {
+            const link = document.createElement('link');
+            link.setAttribute('rel', 'alternate');
+            link.setAttribute('hreflang', lang);
+            link.setAttribute('href', this.getPageUrl(pageKey, lang, data));
+            document.head.appendChild(link);
+        });
+
+        if (!this.isKoreanOnlyPage(pageKey)) {
+            const xDefault = document.createElement('link');
+            xDefault.setAttribute('rel', 'alternate');
+            xDefault.setAttribute('hreflang', 'x-default');
+            xDefault.setAttribute('href', this.getPageUrl(pageKey, 'ko', data));
+            document.head.appendChild(xDefault);
+        }
+    }
+
+    syncLanguageUrl(lang) {
+        if (this.isKoreanOnlyPage()) return;
+
+        try {
+            const url = new URL(window.location.href);
+            if (lang === 'ko') {
+                url.searchParams.delete('lang');
+            } else {
+                url.searchParams.set('lang', lang);
+            }
+            window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+        } catch (e) {
+            console.warn('Failed to sync language URL:', e);
+        }
+    }
+
+    updateMetaTags(data) {
+        const pageKey = this.getPageKey();
+        const seoLang = this.getSeoLang(pageKey);
+        const seo = this.getPageSeo(data, pageKey, seoLang);
+
+        document.documentElement.setAttribute('lang', seoLang);
+        document.title = seo.title;
+
+        this.setMeta('name', 'description', seo.description);
+        this.setMeta('name', 'robots', 'index, follow');
+        this.setCanonical(seo.url);
+
+        this.setMeta('property', 'og:type', seo.type);
+        this.setMeta('property', 'og:url', seo.url);
+        this.setMeta('property', 'og:title', seo.title);
+        this.setMeta('property', 'og:description', seo.description);
+        this.setMeta('property', 'og:image', seo.image);
+        this.setMeta('property', 'og:locale', seo.locale);
+        this.setMeta('property', 'og:site_name', seo.siteName);
+
+        this.setMeta('name', 'twitter:card', 'summary_large_image');
+        this.setMeta('name', 'twitter:url', seo.url);
+        this.setMeta('name', 'twitter:title', seo.title);
+        this.setMeta('name', 'twitter:description', seo.description);
+        this.setMeta('name', 'twitter:image', seo.image);
+
+        this.updateAlternateLinks(pageKey, data);
     }
 
     t(key) {
@@ -80,25 +255,7 @@ class I18n {
 
         // 1. Meta tags
         try {
-            document.title = this.t('meta.title');
-            const metaDesc = document.querySelector('meta[name="description"]');
-            if (metaDesc) metaDesc.setAttribute('content', this.t('meta.description'));
-
-            const ogTitle = document.querySelector('meta[property="og:title"]');
-            if (ogTitle) ogTitle.setAttribute('content', this.t('meta.title'));
-            
-            const ogDesc = document.querySelector('meta[property="og:description"]');
-            if (ogDesc) ogDesc.setAttribute('content', this.t('meta.description'));
-
-            const ogLocale = document.querySelector('meta[property="og:locale"]');
-            if (ogLocale) ogLocale.setAttribute('content', this.lang === 'ko' ? 'ko_KR' : (this.lang === 'ja' ? 'ja_JP' : 'en_US'));
-
-            // Twitter Cards update
-            const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-            if (twitterTitle) twitterTitle.setAttribute('content', this.t('meta.title'));
-            
-            const twitterDesc = document.querySelector('meta[name="twitter:description"]');
-            if (twitterDesc) twitterDesc.setAttribute('content', this.t('meta.description'));
+            this.updateMetaTags(data);
         } catch (e) { console.error('i18n error in meta tags:', e); }
 
         // 2. Language Selector & Header
@@ -191,12 +348,10 @@ class I18n {
                 
                 if (isPrivacyPage) {
                     if (legalTitle) legalTitle.textContent = this.t('common.privacy');
-                    document.title = `${this.t('common.privacy')} - EastFever`;
                     if (typeof marked !== 'undefined') legalBody.innerHTML = marked.parse(this.t('privacy'));
                     else console.warn('Markdown library not loaded');
                 } else if (isTermsPage) {
                     if (legalTitle) legalTitle.textContent = this.t('common.terms');
-                    document.title = `${this.t('common.terms')} - EastFever`;
                     if (typeof marked !== 'undefined') legalBody.innerHTML = marked.parse(this.t('terms'));
                     else console.warn('Markdown library not loaded');
                 }

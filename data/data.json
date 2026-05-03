@@ -1,14 +1,79 @@
 {
   "meta": {
+    "siteName": "EastFever",
+    "baseUrl": "https://eastfever.com",
+    "image": "https://eastfever.com/assets/og-image-final.webp?v=27",
     "title": {
-      "ko": "EastFever - Beyond Here, Another World",
-      "en": "EastFever - Beyond Here, Another World",
-      "ja": "イーストフィーバー - Beyond Here, Another World"
+      "ko": "EastFever - 개인 개발자 앱 개발 공작소",
+      "en": "EastFever - Indie App Lab and Dev Stories",
+      "ja": "EastFever - 個人開発者のアプリ開発工房"
     },
     "description": {
-      "ko": "안녕하세요. 이스트피버의 앱 개발 공작소 입니다. 다양한 앱과 게임을 개발합니다.",
-      "en": "Welcome to EastFever's app development lab. We develop various apps and games",
-      "ja": "イーストフィーバーのアプリ開発工房へようこそ。様々なアプリとゲームを開発しています。"
+      "ko": "EastFever는 개인 개발자의 앱 개발 공작소입니다. 신묘한 만세력, 마훼카, 인생 뽑기 등 앱과 게임, 개발 블로그를 소개합니다.",
+      "en": "EastFever is an indie app lab sharing web apps, mobile games, and development stories, including Sinmyo-Saju, MyFavCopy, and Draw the Life.",
+      "ja": "EastFeverは個人開発者のアプリ開発工房です。Webアプリ、モバイルゲーム、開発ストーリーを紹介します。"
+    },
+    "pages": {
+      "home": {
+        "title": {
+          "ko": "EastFever - 개인 개발자 앱 개발 공작소",
+          "en": "EastFever - Indie App Lab and Dev Stories",
+          "ja": "EastFever - 個人開発者のアプリ開発工房"
+        },
+        "description": {
+          "ko": "EastFever는 개인 개발자의 앱 개발 공작소입니다. 신묘한 만세력, 마훼카, 인생 뽑기 등 앱과 게임, 개발 블로그를 소개합니다.",
+          "en": "EastFever is an indie app lab sharing web apps, mobile games, and development stories, including Sinmyo-Saju, MyFavCopy, and Draw the Life.",
+          "ja": "EastFeverは個人開発者のアプリ開発工房です。Webアプリ、モバイルゲーム、開発ストーリーを紹介します。"
+        }
+      },
+      "privacy": {
+        "title": {
+          "ko": "개인정보처리방침 - EastFever",
+          "en": "Privacy Policy - EastFever",
+          "ja": "個人情報保護方針 - EastFever"
+        },
+        "description": {
+          "ko": "EastFever 웹사이트 및 관련 서비스의 개인정보 처리 기준과 문의처를 안내합니다.",
+          "en": "Learn how EastFever handles privacy for its website and related services, including data use and contact information.",
+          "ja": "EastFeverのウェブサイトおよび関連サービスにおける個人情報の取り扱いとお問い合わせ先を案内します。"
+        }
+      },
+      "terms": {
+        "title": {
+          "ko": "이용약관 - EastFever",
+          "en": "Terms of Service - EastFever",
+          "ja": "利用規約 - EastFever"
+        },
+        "description": {
+          "ko": "EastFever 웹사이트와 관련 서비스 이용 조건, 콘텐츠 저작권, 면책 조항을 안내합니다.",
+          "en": "Read the terms for using EastFever's website and related services, including content copyright and disclaimers.",
+          "ja": "EastFeverのウェブサイトおよび関連サービスの利用条件、コンテンツ著作権、免責事項を案内します。"
+        }
+      },
+      "about": {
+        "title": {
+          "ko": "About EastFever - 개인 개발자 소개"
+        },
+        "description": {
+          "ko": "EastFever 앱 개발 공작소와 개인 개발 프로젝트, 기술 블로그 운영 방향을 소개합니다."
+        }
+      },
+      "blog": {
+        "title": {
+          "ko": "Dev Story - EastFever 개발 블로그"
+        },
+        "description": {
+          "ko": "EastFever의 개발 여정과 기술적 고민, AI 개발, 앱 개발, 일상의 기록을 담은 Dev Story 블로그입니다."
+        }
+      },
+      "post": {
+        "title": {
+          "ko": "Dev Story 포스트 - EastFever"
+        },
+        "description": {
+          "ko": "EastFever Dev Story의 블로그 포스트입니다."
+        }
+      }
     }
   },
   "hero": {
