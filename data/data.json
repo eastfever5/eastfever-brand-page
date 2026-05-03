@@ -2,11 +2,11 @@
   "meta": {
     "siteName": "EastFever",
     "baseUrl": "https://eastfever.com",
-    "image": "https://eastfever.com/assets/og-image-final.webp?v=27",
+    "image": "https://eastfever.com/assets/og-image-final.webp?v=33",
     "title": {
-      "ko": "EastFever - 개인 개발자 앱 개발 공작소",
-      "en": "EastFever - Indie App Lab and Dev Stories",
-      "ja": "EastFever - 個人開発者のアプリ開発工房"
+      "ko": "EastFever - 앱 개발 공작소",
+      "en": "EastFever - EastFever App Lab",
+      "ja": "EastFever - EastFeverのアプリ開発工房"
     },
     "description": {
       "ko": "EastFever는 개인 개발자의 앱 개발 공작소입니다. 신묘한 만세력, 마훼카, 인생 뽑기 등 앱과 게임, 개발 블로그를 소개합니다.",
@@ -16,9 +16,9 @@
     "pages": {
       "home": {
         "title": {
-          "ko": "EastFever - 개인 개발자 앱 개발 공작소",
-          "en": "EastFever - Indie App Lab and Dev Stories",
-          "ja": "EastFever - 個人開発者のアプリ開発工房"
+          "ko": "EastFever - 앱 개발 공작소",
+          "en": "EastFever - EastFever App Lab",
+          "ja": "EastFever - EastFeverのアプリ開発工房"
         },
         "description": {
           "ko": "EastFever는 개인 개발자의 앱 개발 공작소입니다. 신묘한 만세력, 마훼카, 인생 뽑기 등 앱과 게임, 개발 블로그를 소개합니다.",

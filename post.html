@@ -13,7 +13,7 @@
     <meta property="og:type" content="article">
     <meta property="og:title" content="Dev Story 포스트 - EastFever">
     <meta property="og:description" content="EastFever Dev Story의 블로그 포스트입니다.">
-    <meta property="og:image" content="https://eastfever.com/assets/og-image-final.webp?v=27">
+    <meta property="og:image" content="https://eastfever.com/assets/og-image-final.webp?v=33">
     <meta property="og:locale" content="ko_KR">
     <meta property="og:site_name" content="EastFever">
 
@@ -21,7 +21,11 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Dev Story 포스트 - EastFever">
     <meta name="twitter:description" content="EastFever Dev Story의 블로그 포스트입니다.">
-    <meta name="twitter:image" content="https://eastfever.com/assets/og-image-final.webp?v=27">
+    <meta name="twitter:image" content="https://eastfever.com/assets/og-image-final.webp?v=33">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="assets/favicon.png?v=40">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=40">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,9 +33,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     
     <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css?v=27">
-    <link rel="stylesheet" href="css/blog.css?v=27">
-    <link rel="stylesheet" href="css/mobile.css?v=27" media="screen and (max-width: 767px)">
+    <link rel="stylesheet" href="css/style.css?v=32">
+    <link rel="stylesheet" href="css/blog.css?v=32">
+    <link rel="stylesheet" href="css/mobile.css?v=32" media="screen and (max-width: 767px)">
 </head>
 <body>
     <header id="header">
@@ -97,8 +101,8 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="js/data-loader.js?v=27"></script>
-    <script src="js/i18n.js?v=27"></script>
+    <script src="js/data-loader.js?v=32"></script>
+    <script src="js/i18n.js?v=33"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         function upsertJsonLdScript(id, data) {
@@ -194,6 +198,44 @@
             return `/${image}`;
         }
 
+        function resolveAbsoluteImageUrl(image) {
+            if (!image) return 'https://eastfever.com/assets/og-image-final.webp?v=33';
+            if (/^https?:\/\//.test(image)) return image;
+            const path = image.startsWith('/') ? image : `/${image}`;
+            return `https://eastfever.com${path}`;
+        }
+
+        function setMeta(kind, key, content) {
+            if (!content) return;
+            let meta = document.querySelector(`meta[${kind}="${key}"]`);
+            if (!meta) {
+                meta = document.createElement('meta');
+                meta.setAttribute(kind, key);
+                document.head.appendChild(meta);
+            }
+            meta.setAttribute('content', content);
+        }
+
+        function updatePostMetaTags(postInfo) {
+            const title = `${postInfo.title} - EastFever`;
+            const description = postInfo.summary;
+            const url = `https://eastfever.com/post.html?id=${encodeURIComponent(postInfo.id)}`;
+            const image = resolveAbsoluteImageUrl();
+
+            document.title = title;
+            setMeta('name', 'description', description);
+            setMeta('property', 'og:type', 'article');
+            setMeta('property', 'og:url', url);
+            setMeta('property', 'og:title', title);
+            setMeta('property', 'og:description', description);
+            setMeta('property', 'og:image', image);
+            setMeta('name', 'twitter:card', 'summary_large_image');
+            setMeta('name', 'twitter:url', url);
+            setMeta('name', 'twitter:title', title);
+            setMeta('name', 'twitter:description', description);
+            setMeta('name', 'twitter:image', image);
+        }
+
         function renderOgCard(attrs, data) {
             const url = normalizeUrl(attrs.url);
             if (!url) return '';
@@ -244,16 +286,12 @@
                 if (!postInfo) throw new Error('포스트 정보를 찾을 수 없습니다.');
 
                 // 2. 제목 및 메타 설정 (SEO)
-                document.title = `${postInfo.title} - EastFever`;
+                updatePostMetaTags(postInfo);
                 document.getElementById('breadcrumb-title').textContent = postInfo.title;
                 document.getElementById('post-title').textContent = postInfo.title;
                 document.getElementById('post-category').textContent = postInfo.category;
                 document.getElementById('post-date').textContent = postInfo.date;
                 updateBreadcrumbStructuredData(postInfo);
-                
-                // Meta description update
-                const metaDesc = document.querySelector('meta[name="description"]');
-                if (metaDesc) metaDesc.setAttribute('content', postInfo.summary);
 
                 // 3. 마크다운 파일 로드
                 const contentResponse = await fetch(`posts/${postInfo.file}?v=${new Date().getTime()}`);

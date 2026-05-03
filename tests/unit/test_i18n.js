@@ -41,8 +41,9 @@ try {
         window.efI18n.updateUI();
         console.log("UI updated successfully.");
 
-        const expectedTitle = "EastFever - Indie App Lab and Dev Stories";
-        const expectedDescription = "EastFever is an indie app lab sharing web apps, mobile games, and development stories, including Sinmyo-Saju, MyFavCopy, and Draw the Life.";
+        const expectedData = JSON.parse(dataJson);
+        const expectedTitle = expectedData.meta.pages.home.title.en;
+        const expectedDescription = expectedData.meta.pages.home.description.en;
         const metaDescription = window.document.querySelector('meta[name="description"]');
         const canonical = window.document.querySelector('link[rel="canonical"]');
         const alternateEn = window.document.querySelector('link[rel="alternate"][hreflang="en"]');

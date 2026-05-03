@@ -101,7 +101,7 @@ class I18n {
         return {
             title,
             description,
-            image: meta.image || 'https://eastfever.com/assets/og-image-final.webp?v=27',
+            image: meta.image || 'https://eastfever.com/assets/og-image-final.webp?v=33',
             locale: this.getLocale(lang),
             siteName: meta.siteName || 'EastFever',
             url: this.getPageUrl(pageKey, lang, data),
