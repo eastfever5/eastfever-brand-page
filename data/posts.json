@@ -210,6 +210,15 @@
       "date": "2026-04-30",
       "file": "026.md",
       "source": "https://blog.naver.com/five_east_fever/224270816323"
+    },
+    {
+      "id": 27,
+      "title": "2026년 바이브코딩 웹게임 \"인생 뽑기\" 프로토타입 개발 회고",
+      "summary": "Draw the Life 프로토타입을 바이브 게임잼에 출품하며 얻은 반응, UX 문제, 다음 업데이트 계획을 정리합니다.",
+      "category": "바이브개발",
+      "date": "2026-05-06",
+      "file": "027.md",
+      "source": "https://blog.naver.com/five_east_fever/224276549069"
     }
   ]
 }
