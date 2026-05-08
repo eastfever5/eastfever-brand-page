@@ -77,6 +77,48 @@
 
     .service-grid { grid-template-columns: 1fr !important; }
 
+    .modal-content.preview-modal {
+        width: 94vw !important;
+        max-height: 88vh !important;
+        border-radius: 1rem !important;
+    }
+
+    .preview-modal .modal-header {
+        padding: 1rem 3.5rem 0.75rem 1rem !important;
+    }
+
+    .preview-modal .modal-header h2 {
+        font-size: 1.125rem !important;
+    }
+
+    .preview-modal .modal-body {
+        padding: 0 0.75rem 1rem !important;
+    }
+
+    .preview-card {
+        flex-basis: 82vw !important;
+        border-radius: 0.75rem !important;
+    }
+
+    .preview-nav {
+        display: inline-grid !important;
+        width: 2.75rem !important;
+        height: 2.75rem !important;
+    }
+
+    .preview-nav svg {
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+    }
+
+    .preview-nav-prev {
+        left: 0.5rem !important;
+    }
+
+    .preview-nav-next {
+        right: 0.5rem !important;
+    }
+
     .devstory-grid { grid-template-columns: 1fr !important; }
     .devstory-card { min-height: 0 !important; }
 

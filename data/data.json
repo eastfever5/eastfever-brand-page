@@ -2,7 +2,7 @@
   "meta": {
     "siteName": "EastFever",
     "baseUrl": "https://eastfever.com",
-    "image": "https://eastfever.com/assets/og-image-final.webp?v=33",
+    "image": "https://eastfever.com/assets/og-image-final.webp?v=38",
     "title": {
       "ko": "EastFever - 앱 개발 공작소",
       "en": "EastFever - EastFever App Lab",
@@ -197,7 +197,23 @@
         "en": "Chrome extension to view specific areas of your favorite sites all at once.",
         "ja": "お気に入りのサイトの特定領域だけを集めて一度に見るChrome拡張機能。"
       },
-      "thumbnail": "assets/e-fi-board.webp"
+      "thumbnail": "assets/e-fi-board.webp",
+      "preview": {
+        "images": [
+          "assets/e-fi-board/01.png",
+          "assets/e-fi-board/02.png",
+          "assets/e-fi-board/03.png",
+          "assets/e-fi-board/04.png",
+          "assets/e-fi-board/05.png",
+          "assets/e-fi-board/06.png"
+        ],
+        "youtubeUrl": "https://www.youtube.com/watch?v=5hLcmZGMoAs",
+        "videoTitle": {
+          "ko": "이피보드 개발 영상",
+          "en": "E-Fi-Board development video",
+          "ja": "E-Fi-Board 開発動画"
+        }
+      }
     },
     {
       "id": "sinmyo",
@@ -305,6 +321,11 @@
       "en": "Visit",
       "ja": "訪問する"
     },
+    "developmentPreview": {
+      "ko": "개발 화면 보기",
+      "en": "View Dev Preview",
+      "ja": "開発画面を見る"
+    },
     "readStory": {
       "ko": "바로 읽기",
       "en": "Read Story",
@@ -324,6 +345,16 @@
       "ko": "닫기",
       "en": "Close",
       "ja": "閉じる"
+    },
+    "previous": {
+      "ko": "이전",
+      "en": "Previous",
+      "ja": "前へ"
+    },
+    "next": {
+      "ko": "다음",
+      "en": "Next",
+      "ja": "次へ"
     },
     "online": {
       "ko": "운영중",

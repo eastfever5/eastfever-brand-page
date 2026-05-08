@@ -28,7 +28,7 @@ async def run_all_tests():
 
         base_url = "http://localhost:8081" # 기본 개발 서버 포트
         
-        site_og_image = "https://eastfever.com/assets/og-image-final.webp?v=33"
+        site_og_image = "https://eastfever.com/assets/og-image-final.webp?v=38"
         pages = [
             ("/", "Home", site_og_image),
             ("/about/", "About", site_og_image),

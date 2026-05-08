@@ -339,15 +339,19 @@ class ComponentRenderer {
         
         const statusLabel = window.efI18n.t(`common.${service.status}`) || service.status;
         const hasVisitUrl = service.url && service.url !== '#';
+        const hasPreview = service.preview && Array.isArray(service.preview.images);
         let isDevelopingButton = false;
+        let opensPreview = false;
         let visitLabel = window.efI18n.t('common.visit') || 'Visit';
         let buttonAttr = `href="${service.url}" target="_blank" rel="noopener"`;
 
         if (service.type === 'developing' && !hasVisitUrl) {
             isDevelopingButton = true;
-            visitLabel = window.efI18n.t('common.developing') || 'In Development';
-            const devMsg = window.efI18n.t('common.dev_msg') || 'Coming Soon';
-            buttonAttr = `href="javascript:void(0)" onclick="window.modalManager.open('${typeLabel}', '${devMsg.replace(/'/g, "\\'")}', 'developing')"`;
+            opensPreview = hasPreview;
+            visitLabel = opensPreview
+                ? (window.efI18n.t('common.developmentPreview') || 'View Dev Preview')
+                : (window.efI18n.t('common.developing') || 'In Development');
+            buttonAttr = `href="#"`;
         }
 
         div.innerHTML = `
@@ -366,6 +370,30 @@ class ComponentRenderer {
                 <a ${buttonAttr} data-id="${service.id}" class="visit-btn ${isDevelopingButton ? 'developing' : ''}">${visitLabel}</a>
             </div>
         `;
+
+        if (opensPreview) {
+            const previewButton = div.querySelector('.visit-btn');
+            if (previewButton) {
+                previewButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    if (window.modalManager && typeof window.modalManager.openServicePreview === 'function') {
+                        window.modalManager.openServicePreview(service, lang);
+                    }
+                });
+            }
+        } else if (service.type === 'developing' && !hasVisitUrl) {
+            const developingButton = div.querySelector('.visit-btn');
+            if (developingButton) {
+                developingButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const devMsg = window.efI18n.t('common.dev_msg') || 'Coming Soon';
+                    if (window.modalManager) {
+                        window.modalManager.open(typeLabel, devMsg, 'developing');
+                    }
+                });
+            }
+        }
+
         return div;
     }
 
