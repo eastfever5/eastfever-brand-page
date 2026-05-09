@@ -18,15 +18,24 @@ ipconfig getifaddr en0 || ipconfig getifaddr en1
 
 ## 테스트
 
-**유닛 테스트** (npm으로 `jsdom` 설치 필요):
+의존성 설치:
 ```bash
-node tests/unit/test_i18n.js
-node tests/unit/test_markdown.js
+npm install
 ```
 
-**E2E 테스트** (8081 포트에 개발 서버 실행 중이어야 하며 Playwright 설치 필요):
+전체 테스트 파이프라인:
 ```bash
-python3 tests/e2e/test_pages.py
+npm test
+```
+
+**유닛 테스트**:
+```bash
+npm run test:unit
+```
+
+**E2E 테스트** (Python Playwright 설치 필요, 테스트가 임시 로컬 서버를 자동 실행):
+```bash
+npm run test:e2e
 ```
 
 ## 캐시 버스팅
