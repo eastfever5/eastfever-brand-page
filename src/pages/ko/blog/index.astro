@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getAlternates, getPagePath, getPageSeo, getSortedPosts, postPath } from '../../../lib/site';
+
+const seo = getPageSeo('blog', 'ko');
+const posts = await getSortedPosts();
+const categories = ['all', ...Array.from(new Set(posts.map(post => post.category)))];
+---
+<BaseLayout
+  lang="ko"
+  title={seo.title}
+  description={seo.description}
+  canonicalPath={getPagePath('blog', 'ko')}
+  alternates={getAlternates('blog', 'ko')}
+  activePage="blog"
+  ogImage={seo.image}
+  locale={seo.locale}
+>
+  <main class="blog-container">
+    <div class="blog-header">
+      <h1 class="blog-title">Dev Story</h1>
+      <p class="blog-subtitle">개발 여정과 기술적 고민, 일상의 기록들</p>
+    </div>
+
+    <nav class="category-filter" aria-label="블로그 카테고리">
+      {categories.map(category => (
+        <button class:list={['filter-btn', { active: category === 'all' }]} type="button" data-category={category}>
+          {category === 'all' ? '전체' : category}
+        </button>
+      ))}
+    </nav>
+
+    <section id="blog-grid" class="blog-grid">
+      {posts.map(post => (
+        <a href={postPath(post)} class="blog-card" data-category={post.category}>
+          <div class="blog-card-meta">
+            <span class="blog-card-category">{post.category}</span>
+            <span class="blog-card-date">{post.date}</span>
+          </div>
+          <h3 class="blog-card-title">{post.title}</h3>
+          <p class="blog-card-summary">{post.summary}</p>
+        </a>
+      ))}
+    </section>
+  </main>
+
+  <script>
+    const buttons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.blog-card');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        buttons.forEach(item => item.classList.remove('active'));
+        button.classList.add('active');
+
+        const category = button.getAttribute('data-category');
+        cards.forEach(card => {
+          const visible = category === 'all' || card.getAttribute('data-category') === category;
+          card.toggleAttribute('hidden', !visible);
+        });
+      });
+    });
+  </script>
+</BaseLayout>

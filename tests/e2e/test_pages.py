@@ -1,7 +1,6 @@
 import asyncio
 import json
 import os
-import socket
 import subprocess
 import sys
 import time
@@ -14,12 +13,6 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 SITE_DATA = json.loads((ROOT_DIR / "data/data.json").read_text(encoding="utf-8"))
 POST_DATA = json.loads((ROOT_DIR / "data/posts.json").read_text(encoding="utf-8"))
 DEFAULT_OG_IMAGE = SITE_DATA["meta"]["image"]
-
-
-def find_free_port():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.bind(("127.0.0.1", 0))
-        return sock.getsockname()[1]
 
 
 def wait_for_server(base_url, timeout=10):
@@ -39,7 +32,7 @@ def start_local_server():
     if base_url:
         return base_url.rstrip("/"), None
 
-    port = find_free_port()
+    port = int(os.environ.get("LEGACY_TEST_PORT", "8081"))
     base_url = f"http://127.0.0.1:{port}"
     process = subprocess.Popen(
         [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1", "--directory", str(ROOT_DIR)],
@@ -48,6 +41,10 @@ def start_local_server():
         stderr=subprocess.STDOUT,
         text=True,
     )
+    time.sleep(0.1)
+    if process.poll() is not None:
+        output = process.stdout.read() if process.stdout else ""
+        raise RuntimeError(f"Failed to start local server on {base_url}: {output}")
     wait_for_server(base_url)
     return base_url, process
 

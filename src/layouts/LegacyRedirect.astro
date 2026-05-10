@@ -1,0 +1,36 @@
+---
+import { absoluteUrl } from '../lib/site';
+
+type Props = {
+  title?: string;
+  fallbackPath: string;
+  canonicalPath?: string;
+  script?: string;
+  linkLabel?: string;
+};
+
+const {
+  title = 'EastFever Redirect',
+  fallbackPath,
+  canonicalPath = fallbackPath,
+  script,
+  linkLabel = 'Continue to EastFever'
+} = Astro.props;
+
+const redirectScript = script || `window.location.replace(${JSON.stringify(fallbackPath)} + window.location.hash);`;
+---
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href={absoluteUrl(canonicalPath)} />
+    <script is:inline set:html={redirectScript}></script>
+    <meta http-equiv="refresh" content={`0; url=${fallbackPath}`} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <p><a href={fallbackPath}>{linkLabel}</a></p>
+  </body>
+</html>

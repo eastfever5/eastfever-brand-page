@@ -1,0 +1,48 @@
+---
+import { data, getLocalizedValue, resolveAssetPath, type Lang } from '../lib/site';
+
+type Service = (typeof data.services)[number];
+
+type Props = {
+  service: Service;
+  lang: Lang;
+  typeLabel: string;
+};
+
+const { service, lang, typeLabel } = Astro.props;
+const hasVisitUrl = Boolean(service.url && service.url !== '#');
+const href = hasVisitUrl ? service.url : '#';
+const statusLabel = getLocalizedValue(data.common[service.status as keyof typeof data.common], lang, service.status);
+const visitLabel = service.type === 'developing' && !hasVisitUrl
+  ? service.preview
+    ? getLocalizedValue(data.common.developmentPreview, lang)
+    : getLocalizedValue(data.common.developing, lang)
+  : getLocalizedValue(data.common.visit, lang);
+const visitClass = service.type === 'developing' && !hasVisitUrl ? 'visit-btn developing' : 'visit-btn';
+---
+<div class="service-card">
+  <div class="thumb-container">
+    <img src={resolveAssetPath(service.thumbnail)} alt={getLocalizedValue(service.name, lang)} loading="lazy" />
+  </div>
+  <div class="card-content">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="badge badge-type">{typeLabel}</span>
+        {service.type !== 'developing' && <span class="badge badge-status">{statusLabel}</span>}
+      </div>
+    </div>
+    <h3 class="service-name">{getLocalizedValue(service.name, lang)}</h3>
+    <p class="service-desc">{getLocalizedValue(service.description, lang)}</p>
+    <a
+      href={href}
+      target={hasVisitUrl ? '_blank' : undefined}
+      rel={hasVisitUrl ? 'noopener' : undefined}
+      data-id={service.id}
+      data-preview-trigger={service.preview ? 'true' : undefined}
+      aria-haspopup={service.preview ? 'dialog' : undefined}
+      class={visitClass}
+    >
+      {visitLabel}
+    </a>
+  </div>
+</div>

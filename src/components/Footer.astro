@@ -1,0 +1,23 @@
+---
+import { data, getLocalizedValue, type Lang } from '../lib/site';
+
+type Props = {
+  lang: Lang;
+};
+
+const { lang } = Astro.props;
+---
+<footer id="footer">
+  <div class="footer-container">
+    <div class="contact-info">
+      <h3>{getLocalizedValue(data.sections.contact, lang)}</h3>
+      <a href="mailto:mysticodoi@gmail.com" class="email-link">mysticodoi@gmail.com</a>
+    </div>
+    <div class="footer-links">
+      <a href={`/${lang}/terms/`} class="footer-link-text">{getLocalizedValue(data.common.terms, lang)}</a>
+      <span class="footer-divider">|</span>
+      <a href={`/${lang}/privacy/`} class="footer-link-text">{getLocalizedValue(data.common.privacy, lang)}</a>
+    </div>
+    <p class="copyright">&copy; 2026 EastFever. All rights reserved.</p>
+  </div>
+</footer>

@@ -1,0 +1,26 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { data, getLocalizedValue, type Lang } from '../lib/site';
+
+type Props = {
+  lang: Lang;
+  activePage: 'home' | 'about' | 'blog' | 'privacy' | 'terms';
+};
+
+const { lang, activePage } = Astro.props;
+const nav = data.nav;
+---
+<header id="header">
+  <div class="header-container">
+    <div class="header-left">
+      <div class="logo"><a href={`/${lang}/`} class="logo-link">EastFever</a></div>
+      <nav class="nav-menu">
+        <a href={`/${lang}/`} class:list={['nav-link', { active: activePage === 'home' }]}>{getLocalizedValue(nav.home, lang)}</a>
+        <a href="/ko/about/" class:list={['nav-link', { active: activePage === 'about' }]}>{getLocalizedValue(nav.about, lang)}</a>
+        <a href="/ko/blog/" class:list={['nav-link', { active: activePage === 'blog' }]}>{getLocalizedValue(nav.blog, lang)}</a>
+      </nav>
+      <a href="mailto:mysticodoi@gmail.com" class="header-email">mysticodoi@gmail.com</a>
+    </div>
+    <LanguageSwitcher lang={lang} activePage={activePage} />
+  </div>
+</header>

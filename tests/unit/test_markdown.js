@@ -4,8 +4,8 @@ const path = require('path');
 
 const rootDir = path.resolve(__dirname, '../../');
 const dataPath = path.join(rootDir, 'data/data.json');
-const aboutPath = path.join(rootDir, 'about/about.md');
-const postsDir = path.join(rootDir, 'posts');
+const aboutPath = path.join(rootDir, 'src/content/pages/about.ko.md');
+const postsDir = path.join(rootDir, 'src/content/blog');
 
 function assert(condition, message) {
     if (!condition) throw new Error(message);
@@ -40,7 +40,7 @@ try {
     const aboutMarkdown = fs.readFileSync(aboutPath, 'utf8');
     const aboutHtml = marked.parse(stripFrontmatter(aboutMarkdown));
     assert(aboutHtml.includes('이스트피버'), 'About markdown did not render expected content.');
-    console.log(`Markdown parsing (about/about.md): SUCCESS (Length: ${aboutHtml.length})`);
+    console.log(`Markdown parsing (src/content/pages/about.ko.md): SUCCESS (Length: ${aboutHtml.length})`);
 
     const postFiles = fs.readdirSync(postsDir).filter(file => file.endsWith('.md'));
     assert(postFiles.length > 0, 'No markdown posts found.');
@@ -55,7 +55,7 @@ try {
         assert(html.includes('<h1'), `${file} markdown did not render an h1.`);
     }
 
-    console.log(`Markdown parsing (posts/*.md): SUCCESS (${postFiles.length} posts)`);
+    console.log(`Markdown parsing (src/content/blog/*.md): SUCCESS (${postFiles.length} posts)`);
     console.log("Markdown & Data Unit Test: SUCCESS");
 } catch (e) {
     console.error("Markdown & Data Unit Test: FAILED", e);

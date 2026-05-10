@@ -1,0 +1,56 @@
+---
+import { type Lang } from '../lib/site';
+
+type Props = {
+  lang: Lang;
+  activePage: string;
+};
+
+const { lang, activePage } = Astro.props;
+const labels: Record<Lang, string> = {
+  ko: '한국어',
+  en: 'English',
+  ja: '日本語'
+};
+
+const isKoreanOnly = ['about', 'blog'].includes(activePage);
+const currentLabel = isKoreanOnly ? 'Korean Only' : labels[lang];
+const languageLinks: Record<Lang, string> = {
+  ko: '/ko/',
+  en: '/en/',
+  ja: '/ja/'
+};
+---
+<div class="lang-selector" data-lang-selector>
+  <button class="lang-btn" type="button" aria-expanded="false" disabled={isKoreanOnly}>
+    <span class="lang-icon">🌐</span>
+    <span>{currentLabel}</span>
+    {!isKoreanOnly && <span class="arrow">▾</span>}
+  </button>
+  {!isKoreanOnly && (
+    <ul class="lang-dropdown hidden">
+      {Object.entries(languageLinks).map(([itemLang, href]) => (
+        <li><a href={href} class={itemLang === lang ? 'active-lang' : ''}>{labels[itemLang as Lang]}</a></li>
+      ))}
+    </ul>
+  )}
+</div>
+
+<script>
+  document.querySelectorAll('[data-lang-selector]').forEach(selector => {
+    const button = selector.querySelector('.lang-btn');
+    const dropdown = selector.querySelector('.lang-dropdown');
+    if (!button || !dropdown) return;
+
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      dropdown.classList.toggle('hidden');
+      button.setAttribute('aria-expanded', String(!dropdown.classList.contains('hidden')));
+    });
+
+    document.addEventListener('click', () => {
+      dropdown.classList.add('hidden');
+      button.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>

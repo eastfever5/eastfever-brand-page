@@ -1,0 +1,85 @@
+---
+import '../styles/global.css';
+import '../styles/blog.css';
+import '../styles/mobile.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { absoluteUrl, data, type Lang } from '../lib/site';
+
+type Alternate = {
+  lang: string;
+  href: string;
+};
+
+type Props = {
+  lang: Lang;
+  title: string;
+  description: string;
+  canonicalPath: string;
+  alternates: Alternate[];
+  activePage?: 'home' | 'about' | 'blog' | 'privacy' | 'terms';
+  ogType?: 'website' | 'article';
+  ogImage?: string;
+  locale?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+};
+
+const {
+  lang,
+  title,
+  description,
+  canonicalPath,
+  alternates,
+  activePage = 'home',
+  ogType = 'website',
+  ogImage = data.meta.image,
+  locale = 'ko_KR',
+  jsonLd
+} = Astro.props;
+
+const canonicalUrl = absoluteUrl(canonicalPath);
+const jsonLdItems = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+---
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalUrl} />
+    {alternates.map(item => <link rel="alternate" hreflang={item.lang} href={item.href} />)}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={locale} />
+    <meta property="og:site_name" content={data.meta.siteName} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Sans+JP:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    {jsonLdItems.map(item => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
+  </head>
+  <body>
+    <Header lang={lang} activePage={activePage} />
+    <slot />
+    <Footer lang={lang} />
+  </body>
+</html>

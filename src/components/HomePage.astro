@@ -1,0 +1,290 @@
+---
+import {
+  data,
+  getLocalizedValue,
+  getPostMedia,
+  getSortedPosts,
+  postPath,
+  type Lang
+} from '../lib/site';
+import ServiceCard from './ServiceCard.astro';
+
+type Props = {
+  lang: Lang;
+};
+
+const { lang } = Astro.props;
+const latestPosts = (await getSortedPosts()).slice(0, 2).map(post => ({
+  ...post,
+  media: getPostMedia(post)
+}));
+
+const servicesByType = {
+  developing: data.services.filter(service => service.type === 'developing'),
+  webapp: data.services.filter(service => service.type === 'webapp'),
+  game: data.services.filter(service => service.type === 'game')
+};
+
+const previewData = {
+  lang,
+  labels: {
+    close: getLocalizedValue(data.common.close, lang),
+    next: getLocalizedValue(data.common.next, lang),
+    previous: getLocalizedValue(data.common.previous, lang)
+  },
+  services: servicesByType.developing
+    .filter(service => service.preview)
+    .map(service => ({
+      id: service.id,
+      name: service.name,
+      preview: service.preview
+    }))
+};
+
+function serviceTypeLabel(type: string) {
+  if (type === 'webapp') return getLocalizedValue(data.sections.webapps, lang);
+  if (type === 'developing') return getLocalizedValue(data.sections.developing, lang);
+  return getLocalizedValue(data.sections.games, lang);
+}
+---
+<main>
+  <section id="hero" class="hero-section">
+    <div class="hero-content">
+      <h1 id="hero-main-text" class="fade-in-scale" set:html={getLocalizedValue(data.hero.mainText, lang)} />
+      <p id="hero-sub-text" class="typing-effect hero-sub-text" set:html={getLocalizedValue(data.hero.subText, lang)} />
+    </div>
+    <div class="marquee-container">
+      <div id="marquee-bar" class="marquee-bar">
+        {[0, 1, 2].map(() => (
+          <div class="marquee-content">
+            {data.keywords[lang].map(keyword => <span class="keyword-tag">{keyword}</span>)}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="services-section">
+    <div class="section-container">
+      <div id="devstories" class="devstories-block">
+        <h2 id="title-devstories" class="section-title">{getLocalizedValue(data.sections.devstories, lang)}</h2>
+        <div id="devstory-list" class="devstory-grid">
+          {latestPosts.map(post => (
+            <a href={postPath(post)} class="devstory-card" data-id={post.id}>
+              {post.media && (
+                <div class="devstory-media">
+                  <img src={post.media.src} alt={post.media.alt} loading="lazy" />
+                </div>
+              )}
+              <div class="devstory-card-body">
+                <div class="devstory-card-meta">
+                  <span class="devstory-category">{post.category}</span>
+                  <span class="devstory-date">{post.date}</span>
+                </div>
+                <h3 class="devstory-title">{post.title}</h3>
+                <p class="devstory-summary">{post.summary}</p>
+                <span class="devstory-cta">{getLocalizedValue(data.common.readStory, lang)}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <h2 id="title-webapps" class="section-title">{getLocalizedValue(data.sections.webapps, lang)}</h2>
+      <div id="webapp-list" class="service-grid">
+        {servicesByType.webapp.map(service => <ServiceCard service={service} lang={lang} typeLabel={serviceTypeLabel(service.type)} />)}
+      </div>
+
+      <h2 id="title-developing" class="section-title">{getLocalizedValue(data.sections.developing, lang)}</h2>
+      <div id="developing-list" class="service-grid">
+        {servicesByType.developing.map(service => <ServiceCard service={service} lang={lang} typeLabel={serviceTypeLabel(service.type)} />)}
+      </div>
+
+      <h2 id="title-games" class="section-title">{getLocalizedValue(data.sections.games, lang)}</h2>
+      <div id="game-list" class="service-grid">
+        {servicesByType.game.map(service => <ServiceCard service={service} lang={lang} typeLabel={serviceTypeLabel(service.type)} />)}
+      </div>
+    </div>
+  </section>
+
+  <section id="sns" class="sns-section">
+    <div class="section-container">
+      <h2 id="title-sns" class="section-title">{getLocalizedValue(data.sections.sns, lang)}</h2>
+      <div id="sns-list" class="sns-grid">
+        {data.sns.map(sns => (
+          <a href={sns.url} target="_blank" rel="noopener noreferrer" class="sns-card">
+            <span class="sns-icon">{sns.icon}</span>
+            <span class="sns-label">{sns.label}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="service-preview-modal" class="modal hidden" aria-hidden="true">
+  <div class="modal-overlay" data-preview-close></div>
+  <div class="modal-content preview-modal" role="dialog" aria-modal="true" aria-labelledby="service-preview-title">
+    <div class="modal-header">
+      <h2 id="service-preview-title"></h2>
+      <button type="button" class="modal-close-btn" data-preview-close aria-label={previewData.labels.close}>&times;</button>
+    </div>
+    <div id="service-preview-content" class="modal-body"></div>
+  </div>
+</div>
+
+<script id="service-preview-data" type="application/json" set:html={JSON.stringify(previewData)}></script>
+<script is:inline>
+  (() => {
+    const dataNode = document.getElementById('service-preview-data');
+    const modal = document.getElementById('service-preview-modal');
+    const titleNode = document.getElementById('service-preview-title');
+    const contentNode = document.getElementById('service-preview-content');
+    if (!dataNode || !modal || !titleNode || !contentNode) return;
+
+    const previewData = JSON.parse(dataNode.textContent || '{}');
+    const services = new Map((previewData.services || []).map((service) => [service.id, service]));
+    const labels = previewData.labels || {};
+    const lang = previewData.lang || 'ko';
+
+    document.querySelectorAll('[data-preview-trigger="true"]').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const service = services.get(button.dataset.id);
+        if (service) openPreview(service);
+      });
+    });
+
+    modal.querySelectorAll('[data-preview-close]').forEach((button) => {
+      button.addEventListener('click', closePreview);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closePreview();
+      }
+    });
+
+    function openPreview(service) {
+      titleNode.textContent = localized(service.name, service.id);
+      contentNode.innerHTML = createGallery(service);
+      bindGallery(contentNode);
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePreview() {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+      contentNode.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function createGallery(service) {
+      const preview = service.preview || {};
+      const images = Array.isArray(preview.images) ? preview.images : [];
+      const serviceName = localized(service.name, service.id);
+      const imageCards = images.map((src, index) => {
+        const itemNumber = String(index + 1).padStart(2, '0');
+        return `
+          <article class="preview-card">
+            <span class="preview-index">${itemNumber}</span>
+            <img src="${escapeAttribute(resolveAssetPath(src))}" alt="${escapeAttribute(`${serviceName} ${itemNumber}`)}" loading="lazy">
+          </article>
+        `;
+      }).join('');
+      const youtubeEmbedUrl = getYouTubeEmbedUrl(preview.youtubeUrl);
+      const videoTitle = localized(preview.videoTitle, serviceName);
+      const videoNumber = String(images.length + 1).padStart(2, '0');
+      const videoCard = youtubeEmbedUrl ? `
+        <article class="preview-card preview-video-card">
+          <span class="preview-index">${videoNumber}</span>
+          <div class="preview-video-frame">
+            <iframe
+              src="${escapeAttribute(youtubeEmbedUrl)}"
+              title="${escapeAttribute(videoTitle)}"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+          </div>
+        </article>
+      ` : '';
+
+      return `
+        <div class="preview-gallery">
+          <button type="button" class="preview-nav preview-nav-prev" data-preview-nav="prev" aria-label="${escapeAttribute(labels.previous || 'Previous')}">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M15.5 5L8.5 12l7 7"></path>
+            </svg>
+          </button>
+          <div class="preview-track" tabindex="0">
+            ${imageCards}
+            ${videoCard}
+          </div>
+          <button type="button" class="preview-nav preview-nav-next" data-preview-nav="next" aria-label="${escapeAttribute(labels.next || 'Next')}">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M8.5 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      `;
+    }
+
+    function bindGallery(container) {
+      const track = container.querySelector('.preview-track');
+      if (!track) return;
+
+      container.querySelectorAll('[data-preview-nav]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const direction = button.dataset.previewNav === 'next' ? 1 : -1;
+          track.scrollBy({ left: direction * track.clientWidth * 0.9, behavior: 'smooth' });
+        });
+      });
+
+      track.querySelectorAll('img').forEach((image) => {
+        image.addEventListener('error', () => {
+          image.closest('.preview-card')?.classList.add('is-missing');
+        });
+      });
+    }
+
+    function getYouTubeEmbedUrl(url) {
+      if (!url) return '';
+      try {
+        const parsedUrl = new URL(url);
+        if (parsedUrl.hostname.includes('youtube.com')) {
+          const videoId = parsedUrl.searchParams.get('v');
+          if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+        }
+        if (parsedUrl.hostname.includes('youtu.be')) {
+          const videoId = parsedUrl.pathname.replace('/', '');
+          if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+        }
+      } catch (error) {
+        console.warn('Invalid YouTube URL:', error);
+      }
+      return url;
+    }
+
+    function resolveAssetPath(value) {
+      if (!value || /^https?:\/\//.test(value) || value.startsWith('/')) return value || '';
+      return `/${value}`;
+    }
+
+    function localized(value, fallback = '') {
+      if (!value) return fallback;
+      if (typeof value === 'string') return value;
+      return value[lang] || value.ko || fallback;
+    }
+
+    function escapeAttribute(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+  })();
+</script>

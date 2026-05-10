@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LegacyRedirect from '../../../layouts/LegacyRedirect.astro';
+import {
+  absoluteUrl,
+  getPostImage,
+  getSortedPosts,
+  legacyPostSlug,
+  postPath,
+  renderPostMarkdown
+} from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getSortedPosts();
+
+  return posts.flatMap(post => ([
+    {
+      params: { slug: post.slug },
+      props: { post, isLegacy: false }
+    },
+    {
+      params: { slug: legacyPostSlug(post) },
+      props: { post, isLegacy: true }
+    }
+  ]));
+}
+
+const { post, isLegacy = false } = Astro.props;
+const title = `${post.title} - EastFever`;
+const canonicalPath = postPath(post);
+const ogImage = getPostImage(post);
+const body = renderPostMarkdown(post);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  description: post.summary,
+  datePublished: post.date,
+  dateModified: post.updatedAt,
+  image: ogImage,
+  url: absoluteUrl(canonicalPath),
+  author: {
+    '@type': 'Person',
+    name: 'EastFever'
+  }
+};
+---
+{isLegacy ? (
+  <LegacyRedirect
+    title={`${post.title} Redirect`}
+    fallbackPath={canonicalPath}
+    canonicalPath={canonicalPath}
+    linkLabel="Continue to EastFever Dev Story"
+  />
+) : (
+  <BaseLayout
+    lang="ko"
+    title={title}
+    description={post.summary}
+    canonicalPath={canonicalPath}
+    alternates={[{ lang: 'ko', href: absoluteUrl(canonicalPath) }]}
+    activePage="blog"
+    ogType="article"
+    ogImage={ogImage}
+    locale="ko_KR"
+    jsonLd={jsonLd}
+  >
+    <main class="post-container">
+      <article class="post-content">
+        <div class="post-header-area">
+          <nav class="breadcrumbs">
+            <a href="/ko/">Home</a>
+            <span class="breadcrumb-sep">&gt;</span>
+            <a href="/ko/blog/">Dev Story</a>
+            <span class="breadcrumb-sep">&gt;</span>
+            <span id="breadcrumb-title">{post.title}</span>
+          </nav>
+          <span id="post-category" class="post-category">{post.category}</span>
+          <h1 id="post-title" class="post-title">{post.title}</h1>
+          <div class="post-meta">
+            <span id="post-date" class="post-date">{post.date}</span>
+          </div>
+        </div>
+
+        <div id="post-body" class="markdown-body" set:html={body} />
+
+        <div class="back-to-list">
+          <a href="/ko/blog/" class="back-link">
+            <span>←</span> 블로그 목록으로 돌아가기
+          </a>
+        </div>
+      </article>
+    </main>
+  </BaseLayout>
+)}

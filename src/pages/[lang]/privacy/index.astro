@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { data, getAlternates, getLocalizedValue, getPagePath, getPageSeo, isLang, langs, renderMarkdown, type Lang } from '../../../lib/site';
+
+export function getStaticPaths() {
+  return langs.map(lang => ({ params: { lang } }));
+}
+
+const requestedLang = Astro.params.lang;
+if (!isLang(requestedLang)) {
+  return Astro.redirect('/ko/privacy/');
+}
+
+const lang: Lang = requestedLang;
+const seo = getPageSeo('privacy', lang);
+const canonicalPath = getPagePath('privacy', lang);
+const body = renderMarkdown(getLocalizedValue(data.privacy, lang));
+---
+<BaseLayout
+  lang={seo.lang}
+  title={seo.title}
+  description={seo.description}
+  canonicalPath={canonicalPath}
+  alternates={getAlternates('privacy', lang)}
+  activePage="privacy"
+  ogImage={seo.image}
+  locale={seo.locale}
+>
+  <main class="legal-container">
+    <article class="legal-content">
+      <h1 id="legal-title">{getLocalizedValue(data.common.privacy, lang)}</h1>
+      <div id="legal-body" class="markdown-body" set:html={body} />
+    </article>
+  </main>
+</BaseLayout>

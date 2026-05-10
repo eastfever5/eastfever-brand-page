@@ -1,0 +1,33 @@
+# Cloudflare Pages path-based 301 redirects.
+# Query-dependent legacy URLs are handled by Pages Functions.
+/blog.html /ko/blog/ 301
+/about /ko/about/ 301
+/about/ /ko/about/ 301
+/about/index.html /ko/about/ 301
+/ko/blog/001/ /ko/blog/ai-game-development-plan/ 301
+/ko/blog/002/ /ko/blog/unity-stable-core-concepts/ 301
+/ko/blog/003/ /ko/blog/macbook-android-game-recording/ 301
+/ko/blog/004/ /ko/blog/ai-video-game-dropoff-analysis/ 301
+/ko/blog/005/ /ko/blog/freelance-dev-survival-plan/ 301
+/ko/blog/006/ /ko/blog/vibe-coding-brand-page/ 301
+/ko/blog/007/ /ko/blog/gemini-health-journal/ 301
+/ko/blog/008/ /ko/blog/finance-price-google-sheet/ 301
+/ko/blog/009/ /ko/blog/free-simple-web-deployment/ 301
+/ko/blog/010/ /ko/blog/gemini-web-service-prototype/ 301
+/ko/blog/011/ /ko/blog/ai-study-topics/ 301
+/ko/blog/012/ /ko/blog/ai-game-planning-1-realtime-collab/ 301
+/ko/blog/013/ /ko/blog/ai-game-planning-2-obsidian-copilot/ 301
+/ko/blog/014/ /ko/blog/developer-industry-ai-shift-2026/ 301
+/ko/blog/015/ /ko/blog/sinmyo-manse-ryeok-ai-saju/ 301
+/ko/blog/016/ /ko/blog/vibe-coding-without-coding/ 301
+/ko/blog/017/ /ko/blog/vibe-coding-getting-started/ 301
+/ko/blog/018/ /ko/blog/ai-game-planning-3-design-doc/ 301
+/ko/blog/019/ /ko/blog/vibe-coding-tools-comparison/ 301
+/ko/blog/020/ /ko/blog/vibe-coding-prd-first/ 301
+/ko/blog/021/ /ko/blog/antigravity-ai-models/ 301
+/ko/blog/022/ /ko/blog/claude-code-macbook-terminal-2026/ 301
+/ko/blog/023/ /ko/blog/ai-game-planning-4-delegating-design/ 301
+/ko/blog/024/ /ko/blog/kakao-adfit-vibe-webapp-2026/ 301
+/ko/blog/025/ /ko/blog/codex-first-run-macbook-2026/ 301
+/ko/blog/026/ /ko/blog/draw-the-life-vibe-webgame-3-weeks/ 301
+/ko/blog/027/ /ko/blog/draw-the-life-prototype-retrospective/ 301

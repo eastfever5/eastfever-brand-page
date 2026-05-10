@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "include": [
+    "/",
+    "/index.html",
+    "/post.html",
+    "/privacy.html",
+    "/terms.html"
+  ],
+  "exclude": []
+}

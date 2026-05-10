@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getAlternates, getPagePath, getPageSeo, readAboutMarkdown, renderMarkdown, stripFrontmatter } from '../../../lib/site';
+
+const seo = getPageSeo('about', 'ko');
+const canonicalPath = getPagePath('about', 'ko');
+const body = renderMarkdown(stripFrontmatter(await readAboutMarkdown()));
+---
+<BaseLayout
+  lang="ko"
+  title={seo.title}
+  description={seo.description}
+  canonicalPath={canonicalPath}
+  alternates={getAlternates('about', 'ko')}
+  activePage="about"
+  ogImage={seo.image}
+  locale={seo.locale}
+>
+  <main class="about-container">
+    <article id="about-content" class="markdown-body" set:html={body} />
+  </main>
+</BaseLayout>

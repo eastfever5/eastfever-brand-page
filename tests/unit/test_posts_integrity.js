@@ -1,10 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 
 const rootDir = path.resolve(__dirname, '../../');
 const dataPath = path.join(rootDir, 'data/data.json');
-const postsPath = path.join(rootDir, 'data/posts.json');
-const postsDir = path.join(rootDir, 'posts');
+const legacyPostsPath = path.join(rootDir, 'data/posts.json');
+const blogContentDir = path.join(rootDir, 'src/content/blog');
 
 function assert(condition, message) {
     if (!condition) throw new Error(message);
@@ -14,25 +15,14 @@ function readJson(filePath) {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-function parseFrontmatter(markdown) {
-    const match = /^---\s*\n([\s\S]*?)\n---/.exec(markdown);
-    if (!match) return null;
-
-    return match[1].split(/\r?\n/).reduce((data, line) => {
-        const field = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(line);
-        if (!field) return data;
-
-        const key = field[1].trim();
-        let value = field[2].trim();
-        if (
-            (value.startsWith('"') && value.endsWith('"')) ||
-            (value.startsWith("'") && value.endsWith("'"))
-        ) {
-            value = value.slice(1, -1);
-        }
-        data[key] = value;
-        return data;
-    }, {});
+function parseMarkdownEntry(filePath) {
+    const markdown = fs.readFileSync(filePath, 'utf8');
+    const match = /^---\s*\n([\s\S]*?)\n---\s*/.exec(markdown);
+    assert(match, `${path.basename(filePath)} is missing frontmatter.`);
+    return {
+        data: yaml.load(match[1]) || {},
+        body: markdown.slice(match[0].length)
+    };
 }
 
 function isValidDate(value) {
@@ -87,44 +77,59 @@ console.log("--- Starting Post & Asset Integrity Test ---");
 
 try {
     const siteData = readJson(dataPath);
-    const postData = readJson(postsPath);
-    const posts = postData.posts;
+    const legacyPosts = readJson(legacyPostsPath).posts;
+    const postFiles = fs.readdirSync(blogContentDir).filter(file => /^\d{3}\.md$/.test(file)).sort();
 
-    assert(Array.isArray(posts), 'data/posts.json should contain a posts array.');
-    assert(posts.length > 0, 'data/posts.json has no posts.');
+    assert(postFiles.length > 0, 'src/content/blog has no posts.');
 
     const ids = new Set();
-    const files = new Set();
+    const slugs = new Set();
+    const postsByFile = new Map();
 
-    for (const post of posts) {
-        assert(Number.isInteger(post.id), `Post id should be an integer: ${JSON.stringify(post)}`);
+    for (const file of postFiles) {
+        const entry = parseMarkdownEntry(path.join(blogContentDir, file));
+        const post = entry.data;
+
+        for (const key of ['id', 'slug', 'title', 'summary', 'category', 'date', 'updatedAt', 'thumbnail', 'ogImage', 'sourceType']) {
+            assert(post[key] !== undefined && String(post[key]).trim().length > 0, `${file} frontmatter is missing ${key}.`);
+        }
+
+        assert(Number.isInteger(post.id), `${file} id should be an integer.`);
         assert(!ids.has(post.id), `Duplicate post id: ${post.id}`);
         ids.add(post.id);
 
-        for (const key of ['title', 'summary', 'category', 'date', 'file']) {
-            assert(typeof post[key] === 'string' && post[key].trim().length > 0, `Post ${post.id} is missing ${key}.`);
+        assert(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(post.slug), `${file} has invalid slug: ${post.slug}`);
+        assert(!slugs.has(post.slug), `Duplicate post slug: ${post.slug}`);
+        slugs.add(post.slug);
+
+        assert(isValidDate(post.date), `${file} has invalid date: ${post.date}`);
+        assert(isValidDate(post.updatedAt), `${file} has invalid updatedAt: ${post.updatedAt}`);
+        assert(Array.isArray(post.sourceUrls), `${file} sourceUrls should be an array.`);
+        assert(Array.isArray(post.tags), `${file} tags should be an array.`);
+        assert(entry.body.trim().length > 0, `${file} has no markdown body.`);
+        assert(/^#\s+/m.test(entry.body), `${file} should contain a top-level heading.`);
+
+        assertLocalAssetExists(post.thumbnail, blogContentDir, `${file} thumbnail`);
+        assertLocalAssetExists(post.ogImage, blogContentDir, `${file} ogImage`);
+        for (const ref of extractAssetRefs(entry.body)) {
+            assertLocalAssetExists(ref, blogContentDir, `${file} markdown`);
         }
 
-        assert(isValidDate(post.date), `Post ${post.id} has invalid date: ${post.date}`);
-        assert(/^\d{3}\.md$/.test(post.file), `Post ${post.id} file should use 000.md format: ${post.file}`);
-        assert(!files.has(post.file), `Duplicate post file: ${post.file}`);
-        files.add(post.file);
+        postsByFile.set(file, post);
+    }
 
-        const postPath = path.join(postsDir, post.file);
-        assert(fs.existsSync(postPath), `Post ${post.id} markdown file is missing: ${post.file}`);
+    assert(Array.isArray(legacyPosts), 'data/posts.json should contain a posts array.');
+    assert(legacyPosts.length === postFiles.length, 'Legacy post index count should match content collection count.');
 
-        const markdown = fs.readFileSync(postPath, 'utf8');
-        const frontmatter = parseFrontmatter(markdown);
-        assert(frontmatter, `${post.file} is missing frontmatter.`);
+    for (const legacyPost of legacyPosts) {
+        const post = postsByFile.get(legacyPost.file);
+        assert(post, `Legacy post index references missing content file: ${legacyPost.file}`);
 
-        for (const key of ['title', 'date', 'category', 'summary']) {
-            assert(typeof frontmatter[key] === 'string' && frontmatter[key].trim().length > 0, `${post.file} frontmatter is missing ${key}.`);
-        }
-
-        assert(isValidDate(frontmatter.date), `${post.file} frontmatter has invalid date: ${frontmatter.date}`);
-
-        for (const ref of extractAssetRefs(markdown)) {
-            assertLocalAssetExists(ref, postsDir, `${post.file} markdown`);
+        for (const key of ['id', 'slug', 'title', 'summary', 'category', 'date']) {
+            assert(
+                legacyPost[key] === post[key],
+                `Legacy post ${legacyPost.file} ${key} should match content collection.`
+            );
         }
     }
 
@@ -137,7 +142,7 @@ try {
         }
     }
 
-    console.log(`Post & Asset Integrity Test: SUCCESS (${posts.length} posts)`);
+    console.log(`Post & Asset Integrity Test: SUCCESS (${postFiles.length} posts)`);
 } catch (e) {
     console.error("Post & Asset Integrity Test: FAILED", e);
     process.exit(1);

@@ -266,6 +266,7 @@ Astro 전환 전 baseline을 잡기 위해 현재 레거시 사이트 기준 테
 
 - `npm test`: 통과
 - 검증 대상 페이지: `/`, `/about/`, `/blog.html`, `/post.html?id=26`, `/terms.html`, `/privacy.html`
+- Astro 산출물 검증 대상 페이지: `/ko/`, `/en/`, `/ja/`, `/ko/about/`, `/ko/blog/`, `/ko/blog/026/`, `/en/privacy/`, `/ja/terms/`
 
 현재 유닛 테스트가 확인하는 것:
 
@@ -290,10 +291,9 @@ Astro 전환 전 baseline을 잡기 위해 현재 레거시 사이트 기준 테
 
 남은 한계:
 
-- 아직 Astro 빌드 산출물 HTML 기준 검사는 없다.
-- 기존 URL에서 신규 Astro URL로 이동하는 리다이렉트/호환 페이지 검사는 Astro 전환 후 추가해야 한다.
-- sitemap 자동 생성 결과 검사는 Astro 도입 후 추가해야 한다.
-- `data/posts.json`과 Markdown frontmatter의 내용 일치까지는 강제하지 않는다. 현재 여러 포스트에서 제목/요약/날짜 표현 차이가 있어, Astro Content Collections 전환 Phase에서 정규화해야 한다.
+- 호스팅 레벨 301 리다이렉트 지원 여부는 아직 배포 환경에서 확인해야 한다.
+- RSS 피드가 필요한지는 아직 결정하지 않았다.
+- 루트 레거시 HTML/JS/CSS는 baseline 검증용으로 유지 중이며, 실제 배포 안정화 후 제거 또는 archive 이동을 결정한다.
 
 Astro 도입 전 최소 보강 게이트:
 
@@ -301,7 +301,106 @@ Astro 도입 전 최소 보강 게이트:
 - Astro Phase마다 `npm test`를 통과시킨다.
 - Astro 전환 후에는 빌드 산출물 HTML을 대상으로 메타데이터와 본문 존재 여부를 검사한다.
 
-### Phase 0. 전환 기준 확정
+### 2026-05-09 현재 상황 요약
+
+현재 상태:
+
+- 레거시 사이트와 Astro 사이트가 공존한다.
+- 레거시 파일(`index.html`, `blog.html`, `post.html` 등)은 아직 삭제하지 않았다.
+- Astro 구현은 `src/`에 추가되었고, `npm run build`로 `dist/` 정적 산출물을 생성한다.
+- `public/`에는 Astro 배포용 정적 파일과 기존 `/assets/...` 경로를 보존하기 위한 이미지 복사본이 들어 있다.
+- 전체 검증 명령은 `npm test`이며, 레거시 baseline과 Astro 산출물 E2E를 모두 통과한다.
+
+완료된 범위:
+
+- Astro 6 기반 스캐폴딩: `astro.config.mjs`, `tsconfig.json`, `src/`, `public/`
+- `@astrojs/sitemap` 적용. 현재 산출물은 `sitemap-index.xml`, `sitemap-0.xml`을 생성한다.
+- 기존 CSS를 `src/styles/`로 복사하고 Astro 레이아웃에서 import
+- 공통 레이아웃과 컴포넌트: `BaseLayout.astro`, `Header.astro`, `Footer.astro`, `LanguageSwitcher.astro`
+- 언어별 홈 정적 렌더링: `/ko/`, `/en/`, `/ja/`
+- 한국어 About 정적 렌더링: `/ko/about/`
+- 한국어 블로그 목록과 상세 정적 렌더링: `/ko/blog/`, `/ko/blog/{slug}/`
+- 다국어 법적 페이지 정적 렌더링: `/{lang}/privacy/`, `/{lang}/terms/`
+- 포스트별 OG 이미지 반영. 예: `/ko/blog/draw-the-life-vibe-webgame-3-weeks/`는 `/assets/blog/026/image-18.jpg` 사용
+- 기존 URL 호환 레이어: `/blog.html`, `/post.html?id=N`, `/ko/blog/0XX/`, `/privacy.html?lang=...`, `/terms.html?lang=...`, `/about/`을 신규 Astro URL로 이동
+- Content Collections 전환: `src/content.config.ts`, `src/content/blog/*.md`, `src/content/pages/about.ko.md`
+- `data/posts.json`은 `npm run posts:sync`로 생성하는 레거시 호환 인덱스로 전환
+- sitemap canonical URL 포함/redirect URL 제외 검사 추가
+- Astro 산출물 E2E: `tests/e2e/test_astro_pages.py`
+- 최종 검증: `npm test` 통과
+
+아직 완료되지 않은 범위:
+
+- 운영 환경은 Cloudflare Pages다. 경로 기반 301은 `_redirects`로 처리할 수 있으나, query parameter 매칭은 `_redirects`에서 지원하지 않으므로 `/post.html?id=N`, `/privacy.html?lang=en` 같은 URL은 Pages Functions 또는 현재 정적 HTML fallback을 유지해야 한다.
+- RSS 피드 필요 여부는 아직 확정하지 않았다.
+- 루트 레거시 JS/HTML은 삭제하지 않고 baseline 검증용으로 유지한다. 실제 배포는 Astro `dist/` 기준이다.
+
+다음 권장 작업 순서:
+
+1. Cloudflare Pages 301 리다이렉트 운영 방식을 결정하고 적용한다. 경로 기반은 `public/_redirects`, query 기반은 Pages Functions 또는 정적 HTML fallback 중 하나를 선택한다.
+2. RSS 피드가 필요한지 결정한다.
+3. Astro 배포가 충분히 안정화되면 루트 레거시 HTML/JS/CSS를 별도 archive로 이동하거나 제거한다.
+
+### Cloudflare Pages 301 리다이렉트 적용 계획
+
+Cloudflare Pages 기준 결론:
+
+- `public/_redirects` 파일을 사용하면 빌드 결과의 `dist/_redirects`로 복사되어 Pages가 redirect rule로 적용한다.
+- `_redirects`는 301/302/303/307/308, splat, placeholder를 지원한다.
+- `_redirects`는 query parameter 매칭을 지원하지 않는다. 따라서 `/post.html?id=26`, `/privacy.html?lang=en`, `/terms.html?lang=ja`처럼 query 값에 따라 목적지가 달라지는 URL은 `_redirects`만으로 정확히 처리하지 않는다.
+- Pages Functions는 file-based routing을 지원하므로, 필요하면 `/functions/post.html.ts`, `/functions/privacy.html.ts`, `/functions/terms.html.ts` 같은 함수에서 `request.url`의 `searchParams`를 읽고 301 `Response.redirect()`를 반환한다.
+- `_redirects`는 Pages Functions가 매칭되는 요청에는 적용되지 않으므로, 같은 route를 Function과 `_redirects`에 중복 정의하지 않는다.
+
+권장 운영안:
+
+1. 1차 적용은 source-controlled `public/_redirects`로 경로 기반 301만 처리한다.
+
+```text
+/ /ko/ 301
+/blog.html /ko/blog/ 301
+/about/ /ko/about/ 301
+/ko/blog/001/ /ko/blog/ai-game-development-plan/ 301
+/ko/blog/026/ /ko/blog/draw-the-life-vibe-webgame-3-weeks/ 301
+/ko/blog/027/ /ko/blog/draw-the-life-prototype-retrospective/ 301
+```
+
+2. `/post.html`, `/privacy.html`, `/terms.html`은 query 기반 분기가 필요하므로 `_redirects`에 넣지 않는다. 현재 Astro 정적 호환 HTML fallback을 유지한다.
+3. 검색 유입에서 query 기반 URL 비중이 의미 있게 보이면 Pages Functions로 승격한다.
+   - `/functions/post.html.ts`: `id`를 읽어 Content Collections에서 생성한 `id -> slug` 매핑으로 301
+   - `/functions/privacy.html.ts`: `lang`이 `ko/en/ja`면 `/{lang}/privacy/`, 없거나 잘못되면 `/ko/privacy/`로 301
+   - `/functions/terms.html.ts`: `lang`이 `ko/en/ja`면 `/{lang}/terms/`, 없거나 잘못되면 `/ko/terms/`로 301
+4. Functions를 도입하면 Cloudflare Pages의 Functions invocation route가 필요한 route만 포함하는지 확인한다. 정적 파일 전체가 Function을 타지 않도록 `_routes.json` 또는 자동 생성 결과를 점검한다.
+5. 적용 후 production에서 아래 명령으로 상태 코드를 확인한다.
+
+```bash
+curl -I https://eastfever.com/blog.html
+curl -I https://eastfever.com/about/
+curl -I https://eastfever.com/ko/blog/026/
+curl -I "https://eastfever.com/post.html?id=26"
+curl -I "https://eastfever.com/privacy.html?lang=en"
+curl -I "https://eastfever.com/terms.html?lang=ja"
+```
+
+기대 결과:
+
+- `_redirects` 적용 URL은 `301`과 새 `Location`을 반환한다.
+- query 기반 URL은 Pages Functions를 도입한 경우 `301`, 도입하지 않은 경우 현재처럼 `200` HTML fallback 후 canonical URL로 이동한다.
+- query 기반 URL이 `_redirects`에 의해 잘못된 언어/글로 이동하면 안 된다.
+
+현재 적용 상태:
+
+- `public/_redirects`로 `/blog.html`, `/about/`, `/ko/blog/0XX/` 같은 경로 기반 legacy URL을 301 처리한다.
+- `/`, `/index.html`, `/post.html`, `/privacy.html`, `/terms.html`은 query parameter에 따라 목적지가 달라질 수 있으므로 `_redirects`에 넣지 않고 Cloudflare Pages Functions에서 301 처리한다.
+- `public/_routes.json`으로 Pages Functions 호출 범위를 위 query-sensitive legacy URL에만 제한한다.
+- 정적 HTML fallback은 로컬 정적 서버와 비 Cloudflare 환경을 위한 안전망으로 유지한다.
+
+참고 문서:
+
+- Cloudflare Pages Redirects: https://developers.cloudflare.com/pages/configuration/redirects/
+- Cloudflare Pages Functions Routing: https://developers.cloudflare.com/pages/functions/routing/
+- Cloudflare Redirect Rules settings: https://developers.cloudflare.com/rules/url-forwarding/single-redirects/settings/
+
+### Phase 0. 전환 기준 확정 — 부분 완료
 
 목표:
 
@@ -309,17 +408,17 @@ Astro 도입 전 최소 보강 게이트:
 
 작업:
 
-- `https://eastfever.com` 배포 환경이 301 리다이렉트를 지원하는지 확인
-- `/`를 `/ko/`로 리다이렉트할지, `/`를 한국어 호환 홈으로 남길지 결정
-- 블로그 slug 규칙 확정
-- 기존 검색 유입 URL 목록 확인
+- [부분 완료] 운영 환경은 Cloudflare Pages로 확인. 경로 기반 301은 `_redirects`로 가능하고, query 기반 URL은 Pages Functions 또는 정적 HTML fallback이 필요하다.
+- [부분 결정] `/`는 Astro에서 `/ko/`로 이동하는 정적 refresh 페이지를 생성한다. 최종 배포에서는 301 지원 여부에 따라 조정한다.
+- [완료] 블로그 slug 규칙 확정: 영문 소문자, 숫자, 하이픈만 사용하고 한 번 정한 slug는 변경하지 않는다.
+- [부분 완료] 기존 핵심 검색 유입 URL은 `/blog.html`, `/post.html?id=N`, `/privacy.html`, `/terms.html`, `/about/`, `/ko/blog/0XX/`로 보고 호환 레이어를 적용했다.
 
 완료 기준:
 
 - URL 매핑표와 호환 방식이 확정되어 있다.
 - `id -> slug` 매핑 생성 기준이 정해져 있다.
 
-### Phase 1. Astro 스캐폴딩
+### Phase 1. Astro 스캐폴딩 — 완료
 
 목표:
 
@@ -327,12 +426,12 @@ Astro 도입 전 최소 보강 게이트:
 
 작업:
 
-- `package.json`, `astro.config.mjs`, `tsconfig.json` 추가
-- `npm` scripts 추가: `dev`, `build`, `preview`
-- `@astrojs/sitemap` 추가
-- `src/pages/ko/index.astro` 빈 페이지 또는 최소 페이지 생성
-- `src/layouts/BaseLayout.astro` 생성
-- 기존 `assets/*`, `ads.txt`, `robots.txt`, 검증 HTML을 `public/`로 이전할 준비
+- [완료] `package.json`, `astro.config.mjs`, `tsconfig.json` 추가
+- [완료] `npm` scripts 추가: `dev`, `build`, `preview`, `test:astro`
+- [완료] `@astrojs/sitemap` 추가
+- [완료] `src/pages/[lang]/index.astro` 생성
+- [완료] `src/layouts/BaseLayout.astro` 생성
+- [완료] 기존 `assets/*`, `ads.txt`, `robots.txt`, 검증 HTML을 `public/`로 복사
 
 완료 기준:
 
@@ -340,7 +439,7 @@ Astro 도입 전 최소 보강 게이트:
 - `npm run build`가 성공한다.
 - 기존 정적 사이트 파일은 아직 삭제하지 않았다.
 
-### Phase 2. 스타일과 공통 레이아웃 이전
+### Phase 2. 스타일과 공통 레이아웃 이전 — 완료
 
 목표:
 
@@ -348,18 +447,18 @@ Astro 도입 전 최소 보강 게이트:
 
 작업:
 
-- `css/style.css` -> `src/styles/global.css`
-- `css/mobile.css` -> `src/styles/mobile.css`
-- `css/blog.css` -> `src/styles/blog.css`
-- `Header.astro`, `Footer.astro`, `LanguageSwitcher.astro` 구현
-- 기존 네비게이션 링크를 신규 URL 기준으로 변경
+- [완료] `css/style.css` -> `src/styles/global.css`
+- [완료] `css/mobile.css` -> `src/styles/mobile.css`
+- [완료] `css/blog.css` -> `src/styles/blog.css`
+- [완료] `Header.astro`, `Footer.astro`, `LanguageSwitcher.astro` 구현
+- [완료] 기존 네비게이션 링크를 신규 URL 기준으로 변경
 
 완료 기준:
 
 - `/ko/`에서 기존 홈과 유사한 헤더/푸터/기본 스타일이 보인다.
 - CSS 캐시 버스팅 쿼리 파라미터에 더 의존하지 않는다.
 
-### Phase 3. 홈 이전
+### Phase 3. 홈 이전 — 완료
 
 목표:
 
@@ -367,17 +466,17 @@ Astro 도입 전 최소 보강 게이트:
 
 작업:
 
-- `src/data/site.json`에서 hero, keywords, services, sns, contact 데이터 읽기
-- 홈 hero, keyword marquee, dev story preview, services, SNS, contact 섹션 구현
-- `/ko/`, `/en/`, `/ja/` 홈 생성
-- 언어별 `title`, `description`, canonical, hreflang 생성
+- [완료] 기존 `data/data.json`에서 hero, keywords, services, sns, contact 데이터 읽기
+- [완료] 홈 hero, keyword marquee, dev story preview, services, SNS, contact 섹션 구현
+- [완료] `/ko/`, `/en/`, `/ja/` 홈 생성
+- [완료] 언어별 `title`, `description`, canonical, hreflang 생성
 
 완료 기준:
 
 - 각 언어 홈의 초기 HTML에 주요 텍스트와 SEO 메타가 포함된다.
 - 홈 화면이 기존 디자인과 크게 다르지 않다.
 
-### Phase 4. 법적 페이지와 About 이전
+### Phase 4. 법적 페이지와 About 이전 — 완료
 
 목표:
 
@@ -385,18 +484,18 @@ Astro 도입 전 최소 보강 게이트:
 
 작업:
 
-- `/ko/privacy/`, `/en/privacy/`, `/ja/privacy/` 구현
-- `/ko/terms/`, `/en/terms/`, `/ja/terms/` 구현
-- `/ko/about/` 구현
-- 기존 `data/data.json`의 legal Markdown 또는 분리된 `src/data/legal.json` 사용
-- `about/about.md`를 `src/content/pages/about.ko.md`로 이전
+- [완료] `/ko/privacy/`, `/en/privacy/`, `/ja/privacy/` 구현
+- [완료] `/ko/terms/`, `/en/terms/`, `/ja/terms/` 구현
+- [완료] `/ko/about/` 구현
+- [완료] 기존 `data/data.json`의 legal Markdown 사용
+- [완료] `about/about.md`를 `src/content/pages/about.ko.md`로 이전. 루트 `about/`는 레거시 baseline용으로 유지한다.
 
 완료 기준:
 
 - 법적 페이지와 About 페이지가 클라이언트 `marked.js` 없이 정적 HTML로 렌더링된다.
 - 각 페이지의 canonical, OG, Twitter 메타가 초기 HTML에 존재한다.
 
-### Phase 5. 블로그 이전
+### Phase 5. 블로그 이전 — 완료
 
 목표:
 
@@ -404,14 +503,15 @@ Astro 도입 전 최소 보강 게이트:
 
 작업:
 
-- `posts/*.md`를 `src/content/blog/*.md`로 이전
-- 모든 포스트 frontmatter 정규화
-- `src/content/config.ts`에서 blog collection schema 정의
-- `/ko/blog/` 목록 페이지 구현
-- `/ko/blog/[slug].astro` 상세 페이지 구현
-- `getStaticPaths()`로 모든 포스트 라우트 생성
-- 포스트별 `title`, `summary`, `ogImage`, `date`, `updatedAt` 기반 메타 생성
-- 목록의 상세 링크를 `/ko/blog/{slug}/`로 변경
+- [완료] `posts/*.md`를 `src/content/blog/*.md`로 이전. 루트 `posts/`는 레거시 baseline/reference로만 유지
+- [완료] 모든 포스트 frontmatter 정규화
+- [완료] `src/content.config.ts`에서 blog/pages collection schema 정의
+- [완료] `/ko/blog/` 목록 페이지 구현
+- [완료] `/ko/blog/[slug].astro` 상세 페이지 구현
+- [완료] `getStaticPaths()`로 모든 포스트 라우트 생성
+- [완료] 포스트별 `title`, `summary`, `ogImage`, `date`, `updatedAt` 기반 메타 생성
+- [완료] 목록의 상세 링크를 `/ko/blog/{slug}/`로 변경
+- [완료] 기존 숫자 URL `/ko/blog/0XX/`는 canonical slug URL로 이동
 
 완료 기준:
 
@@ -419,7 +519,7 @@ Astro 도입 전 최소 보강 게이트:
 - 각 포스트 HTML에 본문, 제목, 설명, canonical, OG 메타가 정적으로 포함된다.
 - 기존 `data/posts.json` 없이도 블로그 목록과 상세가 렌더링된다.
 
-### Phase 6. SEO 인프라와 호환 레이어
+### Phase 6. SEO 인프라와 호환 레이어 — 부분 완료
 
 목표:
 
@@ -427,12 +527,14 @@ Astro 도입 전 최소 보강 게이트:
 
 작업:
 
-- `@astrojs/sitemap`으로 sitemap 생성
-- `robots.txt`, `ads.txt`, 네이버 검증 HTML이 빌드 결과에 포함되는지 확인
-- `legacy-post-map.json` 생성
-- `/blog.html`, `/post.html`, `/privacy.html`, `/terms.html` 호환 페이지 또는 호스팅 리다이렉트 적용
-- JSON-LD 구조화 데이터 재구성
-- RSS 피드가 필요하면 별도 Phase로 검토
+- [완료] `@astrojs/sitemap`으로 sitemap 생성
+- [완료] `robots.txt`, `ads.txt`, 네이버 검증 HTML이 빌드 결과에 포함됨
+- [완료] `post.html` 호환 endpoint에서 Content Collections 기반 `id -> /ko/blog/{slug}/` 매핑을 빌드 시 생성
+- [완료] `/blog.html`, `/post.html`, `/privacy.html`, `/terms.html`, `/about/` 정적 호환 페이지 적용
+- [완료] sitemap에서 `/`, `/about/`, `/ko/blog/0XX/` 같은 redirect-only URL 제외
+- [완료] `robots.txt` sitemap 경로를 `sitemap-index.xml`로 확정
+- [부분 완료] 홈과 블로그 상세 JSON-LD 구조화 데이터 추가
+- [대기] RSS 피드 필요 여부 검토
 
 완료 기준:
 
@@ -440,7 +542,7 @@ Astro 도입 전 최소 보강 게이트:
 - 기존 핵심 URL 접근 시 신규 URL로 이동하거나 canonical이 명확하다.
 - Search Console/Naver/AdSense 검증 파일이 배포 결과에 포함된다.
 
-### Phase 7. 테스트 갱신
+### Phase 7. 테스트 갱신 — 부분 완료
 
 목표:
 
@@ -448,19 +550,18 @@ Astro 도입 전 최소 보강 게이트:
 
 작업:
 
-- `tests/e2e/test_pages.py` 대상 경로를 신규 URL로 갱신
-- 블로그 상세 샘플 1개 이상에서 title/meta/canonical/og:image 확인
-- 빌드 산출물 HTML 검사 스크립트 추가
-- Content Collections schema 검증 실패를 빌드 실패로 연결
-- 기존 `test_i18n.js`는 런타임 i18n 테스트에서 라우트/메타 테스트로 전환
-- 기존 `test_markdown.js`는 Astro Markdown/frontmatter 검증 테스트로 전환
+- [완료] 기존 `tests/e2e/test_pages.py`는 레거시 baseline으로 유지
+- [완료] Astro 신규 URL 검증용 `tests/e2e/test_astro_pages.py` 추가
+- [완료] 블로그 상세 샘플 1개 이상에서 title/meta/canonical/og:image 확인
+- [완료] Astro 산출물 E2E에 기존 URL 호환 이동 검증 추가
+- [완료] 빌드 산출물 HTML 검사 스크립트 추가: `tests/unit/test_dist_static_html.js`
+- [완료] Content Collections schema 검증 실패를 빌드 실패로 연결
+- [완료] Markdown/에셋 무결성 검사를 `src/content/blog` 기준으로 갱신
 
 권장 검증 명령:
 
 ```bash
-npm run build
-npm run dev
-python3 tests/e2e/test_pages.py
+npm test
 ```
 
 완료 기준:
@@ -469,7 +570,7 @@ python3 tests/e2e/test_pages.py
 - 주요 페이지 e2e가 통과한다.
 - 블로그 포스트 누락, slug 중복, 필수 메타 누락을 자동 검출한다.
 
-### Phase 8. 정리
+### Phase 8. 정리 — 부분 완료
 
 목표:
 
@@ -477,11 +578,11 @@ python3 tests/e2e/test_pages.py
 
 작업:
 
-- `js/data-loader.js`, `js/i18n.js`, `js/components.js`, `js/main.js`, `js/blog.js` 제거 검토
-- 기존 HTML 파일은 호환이 끝난 것부터 제거 또는 `legacy/`로 보관
-- `data/posts.json` 삭제 또는 생성 산출물로 전환
-- `ops/burst_version.py` 제거 여부 검토
-- 문서와 워크플로우 갱신: `AGENTS.md`, `.agent/workflows/add-post.md`, `.agent/workflows/rundev.md`
+- [결정] `js/data-loader.js`, `js/i18n.js`, `js/components.js`, `js/main.js`, `js/blog.js`는 배포 안정화 전까지 레거시 baseline용으로 유지
+- [결정] 기존 HTML 파일은 배포 안정화 전까지 레거시 baseline용으로 유지
+- [완료] `data/posts.json`은 `npm run posts:sync`로 생성하는 레거시 호환 산출물로 전환
+- [결정] `ops/burst_version.py`는 레거시 baseline용으로만 유지하며 Astro 작업에서는 사용하지 않는다
+- [완료] 문서와 워크플로우 갱신: `AGENTS.md`, `CLAUDE.md`, `.agent/workflows/add-post.md`, `.agent/workflows/rundev.md`
 
 완료 기준:
 
@@ -489,7 +590,9 @@ python3 tests/e2e/test_pages.py
 - 캐시 버스팅 수동 증가 작업이 필요 없다.
 - 레거시 파일의 보관/삭제 기준이 명확하다.
 
-## 9. 권장 1차 PR 범위
+## 9. 권장 PR 분할
+
+### PR 1. Astro 기반 공존 구조 — 완료
 
 첫 PR은 전체 마이그레이션을 끝내려 하지 말고, Astro 기반이 안전하게 서는지 확인하는 데 집중한다.
 
@@ -509,6 +612,58 @@ python3 tests/e2e/test_pages.py
 - 디자인 리뉴얼
 
 이렇게 쪼개면 기존 사이트를 유지한 채 Astro 전환 위험을 작게 검증할 수 있다.
+
+현재 PR 1 범위는 완료되었고 `npm test`가 통과한다.
+
+### PR 2. 기존 URL 호환 레이어 — 완료
+
+목표:
+
+- 기존 검색/공유 유입 URL이 신규 Astro URL로 안전하게 이어지도록 한다.
+
+포함:
+
+- `/blog.html` -> `/ko/blog/`
+- `/post.html?id=N` -> `/ko/blog/{id}/` 또는 slug 전환 후 `/ko/blog/{slug}/`
+- `/privacy.html?lang=en` -> `/en/privacy/`
+- `/terms.html?lang=ja` -> `/ja/terms/`
+- `/about/` -> `/ko/about/`
+- 호환 페이지 또는 호스팅 301 리다이렉트 방식 결정
+- E2E에 기존 URL 호환 검증 추가
+
+현재 PR 2 범위는 정적 호환 HTML 방식으로 완료되었다. `npm run build` 산출물에 `/blog.html`, `/post.html`, `/privacy.html`, `/terms.html`, `/about/`이 포함되며, `npm test`가 통과한다. Cloudflare Pages에서는 경로 기반 URL을 `public/_redirects`로 301 처리하고, query 기반 URL은 Pages Functions 또는 현재 정적 HTML fallback 중 하나로 운영한다.
+
+### PR 3. 블로그 slug와 Content Collections — 완료
+
+목표:
+
+- 블로그 데이터의 단일 기준을 Astro Content Collections로 옮긴다.
+
+포함:
+
+- `posts/*.md` -> `src/content/blog/*.md`
+- `src/content.config.ts` schema 추가
+- 모든 포스트에 `slug`, `id`, `summary`, `category`, `date`, `updatedAt`, `thumbnail`, `ogImage` 정규화
+- `legacy-post-map.json` 또는 동등한 `id -> slug` 매핑 추가
+- `/ko/blog/{slug}/`를 canonical로 사용
+
+현재 PR 3 범위는 완료되었다. Astro 블로그는 `data/posts.json` 없이 Content Collections에서 렌더링하며, `/post.html?id=N`과 `/ko/blog/0XX/`는 canonical slug URL로 이동한다.
+
+### PR 4. 배포/SEO 마무리와 레거시 정리 — 완료
+
+목표:
+
+- 실제 배포 산출물 기준으로 검색/공유/검증 파일을 확정하고 레거시 구조를 정리한다.
+
+포함:
+
+- sitemap 개별 URL 포함 검사
+- robots sitemap 경로 최종 확정
+- Search Console/Naver/AdSense 검증 파일 포함 확인
+- 더 이상 쓰지 않는 `js/*.js`, 루트 HTML, `ops/burst_version.py` 보관/삭제 결정
+- `AGENTS.md`, `.agent/workflows/*`를 Astro 기준으로 최종 갱신
+
+현재 PR 4 범위는 완료되었다. `tests/unit/test_dist_static_html.js`와 Astro E2E가 sitemap/robots/검증 파일/legacy redirect를 확인한다. 루트 레거시 파일은 삭제하지 않고 baseline 검증용으로 유지하는 것으로 결정했다.
 
 ## 10. 주요 리스크와 대응
 

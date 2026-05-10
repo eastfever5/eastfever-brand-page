@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HomePage from '../../components/HomePage.astro';
+import { absoluteUrl, data, getAlternates, getHomePath, getPageSeo, isLang, langs, type Lang } from '../../lib/site';
+
+export function getStaticPaths() {
+  return langs.map(lang => ({ params: { lang } }));
+}
+
+const requestedLang = Astro.params.lang;
+if (!isLang(requestedLang)) {
+  return Astro.redirect('/ko/');
+}
+
+const lang: Lang = requestedLang;
+const seo = getPageSeo('home', lang);
+const canonicalPath = getHomePath(lang);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: data.meta.siteName,
+  url: absoluteUrl(canonicalPath),
+  description: seo.description,
+  publisher: {
+    '@type': 'Person',
+    name: data.meta.siteName,
+    email: 'mysticodoi@gmail.com'
+  }
+};
+---
+<BaseLayout
+  lang={seo.lang}
+  title={seo.title}
+  description={seo.description}
+  canonicalPath={canonicalPath}
+  alternates={getAlternates('home', lang)}
+  activePage="home"
+  ogType="website"
+  ogImage={seo.image}
+  locale={seo.locale}
+  jsonLd={jsonLd}
+>
+  <HomePage lang={lang} />
+</BaseLayout>
