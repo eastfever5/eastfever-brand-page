@@ -207,6 +207,13 @@
     line-height: 1.8;
     color: #334155;
 }
+.markdown-body.align-center { text-align: center; }
+.markdown-body.align-right { text-align: right; }
+
+.markdown-body.align-center img { display: block; margin-left: auto; margin-right: auto; }
+.markdown-body.align-center .og-card-wrap { display: flex; justify-content: center; }
+.markdown-body.align-right img { display: block; margin-left: auto; margin-right: 0; }
+.markdown-body.align-right .og-card-wrap { display: flex; justify-content: flex-end; }
 
 .markdown-body h1 { font-size: 2.25rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
 .markdown-body h2 { font-size: 1.875rem; font-weight: 700; margin-top: 2rem; margin-bottom: 1.25rem; }
@@ -218,7 +225,8 @@
     line-height: 1.3;
 }
 
-.markdown-body p { margin-bottom: 1.25rem; }
+.markdown-body p { margin-bottom: 1.25rem; white-space: pre-wrap; word-break: keep-all; }
+.markdown-body hr { margin: 2.5rem 0; border: 0; border-top: 1px solid #e2e8f0; }
 .markdown-body img { max-width: 100%; border-radius: 0.75rem; margin: 2rem 0; }
 .markdown-body .video-embed {
     position: relative;
@@ -235,31 +243,31 @@
     border: 0;
 }
 .markdown-body .og-card-wrap {
-    margin: 1.5rem 0 2rem;
+    margin: 1.5rem 0 2.25rem;
 }
 .markdown-body .og-card {
-    display: grid;
-    grid-template-columns: 96px minmax(0, 1fr);
-    gap: 1rem;
-    align-items: center;
-    padding: 0.875rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
+    display: block;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.125rem;
     background: #fff;
     color: inherit;
     text-decoration: none;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
     transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .markdown-body .og-card:hover {
     border-color: var(--accent-color);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
     transform: translateY(-2px);
 }
 .markdown-body .og-card-image {
-    width: 96px;
-    height: 96px;
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 3;
     object-fit: cover;
-    border-radius: 0.5rem;
+    border-radius: 0;
     margin: 0;
     background: #f1f5f9;
 }
@@ -267,26 +275,33 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.45rem;
+    padding: 1.35rem 1.5rem 1.5rem;
 }
 .markdown-body .og-card-title {
-    color: var(--text-main);
-    font-size: 1rem;
-    line-height: 1.4;
+    color: #2f343b;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 .markdown-body .og-card-description {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    line-height: 1.5;
+    color: #9ca3af;
+    font-size: 1rem;
+    line-height: 1.55;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 .markdown-body .og-card-url {
-    color: #64748b;
-    font-size: 0.8125rem;
+    color: #03c75a;
+    font-size: 0.95rem;
     line-height: 1.4;
 }
 .markdown-body pre { background: #f1f5f9; padding: 1.5rem; border-radius: 0.75rem; overflow-x: auto; margin: 1.5rem 0; }

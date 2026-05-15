@@ -82,7 +82,7 @@ const jsonLd = {
           </div>
         </div>
 
-        <div id="post-body" class="markdown-body" set:html={body} />
+        <div id="post-body" class={`markdown-body ${post.textAlign ? `align-${post.textAlign}` : ''}`} set:html={body} />
 
         <div class="back-to-list">
           <a href="/ko/blog/" class="back-link">

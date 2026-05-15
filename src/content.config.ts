@@ -19,7 +19,8 @@ const blog = defineCollection({
     ogImage: publicAsset,
     sourceType: z.string().min(1),
     sourceUrls: z.array(z.string().url()).default([]),
-    tags: z.array(z.string().min(1)).default([])
+    tags: z.array(z.string().min(1)).default([]),
+    textAlign: z.enum(['left', 'center', 'right']).optional()
   })
 });
 

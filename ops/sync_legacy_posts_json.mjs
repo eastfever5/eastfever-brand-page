@@ -24,6 +24,7 @@ function parseEntry(file) {
     date: data.date,
     file,
     slug: data.slug,
+    ...(data.textAlign ? { textAlign: data.textAlign } : {}),
     ...(Array.isArray(data.sourceUrls) && data.sourceUrls.length > 0
       ? { source: data.sourceUrls[data.sourceUrls.length - 1] }
       : {})

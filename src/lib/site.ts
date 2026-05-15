@@ -23,6 +23,7 @@ export type PostMeta = {
   tags: string[];
   body: string;
   collectionId: string;
+  textAlign?: 'left' | 'center' | 'right';
   filePath?: string;
 };
 
@@ -170,13 +171,13 @@ export function stripFirstHeading(markdown: string) {
   return markdown.replace(/^(\s*#\s+[^\r\n]*)/, '').trim();
 }
 
-export function renderMarkdown(markdown: string) {
-  return marked.parse(markdown, { async: false }) as string;
+export function renderMarkdown(markdown: string, options: { breaks?: boolean } = {}) {
+  return marked.parse(markdown, { async: false, ...options }) as string;
 }
 
 export function renderPostMarkdown(post: PostMeta) {
   const markdown = stripFirstHeading(stripFrontmatter(post.body));
-  return renderMarkdown(replaceOgCards(markdown));
+  return renderMarkdown(replaceOgCards(markdown), { breaks: true });
 }
 
 export function resolveAssetPath(value: string | undefined) {
@@ -231,7 +232,7 @@ function extractFirstImage(markdown: string) {
 }
 
 function replaceOgCards(markdown: string) {
-  return markdown.replace(/^::og-card\{([^}\n]+)\}\s*$/gm, (_match, attrText: string) => {
+  return markdown.replace(/^::og-card\{([^}\n]+)\}[ \t]*$/gm, (_match, attrText: string) => {
     const attrs = parseInlineAttrs(attrText);
     const url = attrs.url;
     if (!url) return '';
@@ -260,10 +261,19 @@ function parseInlineAttrs(value: string) {
   let match;
 
   while ((match = attrPattern.exec(value)) !== null) {
-    attrs[match[1] || match[3]] = match[2] || match[4] || '';
+    attrs[match[1] || match[3]] = decodeHtmlEntities(match[2] || match[4] || '');
   }
 
   return attrs;
+}
+
+function decodeHtmlEntities(value: string) {
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
 }
 
 function escapeHtml(value: string) {

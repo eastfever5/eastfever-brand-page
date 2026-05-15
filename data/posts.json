@@ -246,6 +246,17 @@
       "file": "027.md",
       "slug": "draw-the-life-prototype-retrospective",
       "source": "https://blog.naver.com/five_east_fever/224276549069"
+    },
+    {
+      "id": 28,
+      "title": "2026년, 바이브 코딩용 AI 3대장 1개월 사용 후기",
+      "summary": "클로드 코드, 안티그라비티, 코덱스를 한 달간 함께 사용하며 느낀 개발용 AI별 강점과 활용 방식을 정리합니다.",
+      "category": "바이브개발",
+      "date": "2026-05-15",
+      "file": "028.md",
+      "slug": "vibe-coding-ai-tools-one-month-review",
+      "textAlign": "center",
+      "source": "https://blog.naver.com/five_east_fever/224286548466"
     }
   ]
 }

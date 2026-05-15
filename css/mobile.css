@@ -158,19 +158,21 @@
         border-radius: 1rem !important;
     }
     .markdown-body .og-card {
-        grid-template-columns: 72px minmax(0, 1fr);
-        gap: 0.75rem;
-        padding: 0.75rem;
+        display: block;
     }
     .markdown-body .og-card-image {
-        width: 72px;
-        height: 72px;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 5 / 3;
+    }
+    .markdown-body .og-card-content {
+        padding: 1rem 1.125rem 1.125rem;
     }
     .markdown-body .og-card-title {
-        font-size: 0.9375rem;
+        font-size: 1rem;
     }
     .markdown-body .og-card-description {
-        font-size: 0.8125rem;
+        font-size: 0.875rem;
     }
 
     .blog-card-summary {

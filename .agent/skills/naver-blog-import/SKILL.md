@@ -43,6 +43,10 @@ This creates the next `posts/NNN.md` file and appends to `data/posts.json`.
 - Treat RSS as a discovery or summary source only; it is usually truncated.
 - If `--dev-story` is used, inspect `data/posts.json` for duplicate titles or source URLs.
 - If the imported category is not one of `AI`, `바이브개발`, `개발Tips`, `강의`, `기타`, choose the closest site category or pass `--category`.
+- Preserve Naver SmartEditor `se-oglink` link boxes as `::og-card{url="..." title="..." description="..." image="..."}`. Do not convert them to plain Markdown links or blockquotes.
+- Download `se-oglink` thumbnails into the post's local `/assets/blog/NNN/` folder and reference the local path in the `image` attribute. A text-only `::og-card` is allowed only when the original link box has no thumbnail.
+- After importing, check for leftover Naver image hosts with `rg -n "mblogthumb|blogthumb|pstatic|dthumb" posts/NNN.md`.
+- Preserve line-by-line breaks from the Naver post body. Do not reflow short Naver lines into one Markdown line, and make sure Dev Story renders single newlines in blog posts as visible line breaks.
 
 ## Parser Notes
 

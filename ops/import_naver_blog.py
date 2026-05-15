@@ -55,6 +55,7 @@ class ParsedPost:
     markdown_body: str
     component_counts: dict[str, int]
     warnings: list[str]
+    text_align: str = "left"
 
     @property
     def markdown(self) -> str:
@@ -63,21 +64,22 @@ class ParsedPost:
             tag_section = ["tags:"]
             tag_section.extend(f"  - {yaml_string(tag)}" for tag in self.tags)
 
-        frontmatter = "\n".join(
-            [
-                "---",
-                f"title: {yaml_string(self.title)}",
-                f"date: {yaml_string(self.published_date)}",
-                f"category: {yaml_string(self.category)}",
-                f"summary: {yaml_string(self.summary)}",
-                f"source_url: {yaml_string(self.source_url)}",
-                f"source_mobile_url: {yaml_string(self.mobile_url)}",
-                "source_type: \"naver_blog\"",
-                *tag_section,
-                "---",
-                "",
-            ]
-        )
+        frontmatter_lines = [
+            "---",
+            f"title: {yaml_string(self.title)}",
+            f"date: {yaml_string(self.published_date)}",
+            f"category: {yaml_string(self.category)}",
+            f"summary: {yaml_string(self.summary)}",
+            f"source_url: {yaml_string(self.source_url)}",
+            f"source_mobile_url: {yaml_string(self.mobile_url)}",
+            "source_type: \"naver_blog\"",
+        ]
+        if self.text_align != "left":
+            frontmatter_lines.append(f"textAlign: {yaml_string(self.text_align)}")
+        frontmatter_lines.extend(tag_section)
+        frontmatter_lines.append("---")
+        
+        frontmatter = "\n".join(frontmatter_lines)
         return f"{frontmatter}# {self.title}\n\n{self.markdown_body.strip()}\n"
 
 
@@ -253,8 +255,9 @@ def text_lines_from_component(block: str) -> list[str]:
         r'<p class="se-text-paragraph[^"]*"[^>]*>([\s\S]*?)</p>', block
     ):
         line = strip_tags(match.group(1))
-        if line:
-            lines.append(line)
+        if not line:
+            line = "&nbsp;"
+        lines.append(line)
     return lines
 
 
@@ -280,6 +283,24 @@ def image_markdowns_from_component(block: str) -> list[str]:
 
     return images
 
+
+def directive_attr(value: str) -> str:
+    return html.escape(value or "", quote=True)
+
+
+def image_src_by_class(block: str, class_name: str) -> str:
+    for match in re.finditer(r"<img\b[^>]*>", block):
+        tag = match.group(0)
+        if class_name not in tag:
+            continue
+
+        source_match = re.search(r'\bsrc="([^"]+)"', tag)
+        if source_match:
+            return html.unescape(source_match.group(1)).strip()
+
+    return ""
+
+
 def oglink_markdown_from_component(block: str) -> str:
     link = ""
     linkdata = re.search(r'data-linkdata=\'([^\']*?"link"[^\']*?)\'', block)
@@ -295,12 +316,20 @@ def oglink_markdown_from_component(block: str) -> str:
     summary_match = re.search(r'<p class="se-oglink-summary">([\s\S]*?)</p>', block)
     title = strip_tags(title_match.group(1)) if title_match else link
     summary = strip_tags(summary_match.group(1)) if summary_match else ""
+    thumbnail = image_src_by_class(block, "se-oglink-thumbnail-resource")
 
     if not title and not link:
         return ""
+
+    attrs = [
+        f'url="{directive_attr(link)}"',
+        f'title="{directive_attr(title)}"',
+    ]
     if summary:
-        return f"> [{title}]({link})\n>\n> {summary}"
-    return f"> [{title}]({link})"
+        attrs.append(f'description="{directive_attr(summary)}"')
+    if thumbnail:
+        attrs.append(f'image="{directive_attr(thumbnail)}"')
+    return f"::og-card{{{' '.join(attrs)}}}"
 
 
 def video_markdown_from_component(block: str) -> str:
@@ -316,6 +345,7 @@ def build_markdown_body(container_html: str) -> tuple[str, dict[str, int], list[
     warnings: list[str] = []
     all_text_lines: list[str] = []
     counts: Counter[str] = Counter()
+    alignments: Counter[str] = Counter()
 
     for block in component_blocks(container_html):
         ctype = component_type(block)
@@ -325,7 +355,7 @@ def build_markdown_body(container_html: str) -> tuple[str, dict[str, int], list[
             lines = text_lines_from_component(block)
             all_text_lines.extend(lines)
             if lines:
-                parts.append("\n".join(lines))
+                parts.append("\n\n".join(lines))
         elif ctype in {"se-image", "se-imageStrip"}:
             images = image_markdowns_from_component(block)
             if images:
@@ -343,7 +373,7 @@ def build_markdown_body(container_html: str) -> tuple[str, dict[str, int], list[
         elif ctype == "se-horizontalLine":
             parts.append("---")
         elif ctype in {"se-sticker", "se-quotation", "se-placesMap"}:
-            text = "\n".join(text_lines_from_component(block))
+            text = "\n\n".join(text_lines_from_component(block))
             if text:
                 parts.append(text)
             else:
@@ -351,8 +381,24 @@ def build_markdown_body(container_html: str) -> tuple[str, dict[str, int], list[
         else:
             warnings.append(f"Unsupported component type skipped: {ctype}")
 
+        if ctype in {"se-text", "se-image", "se-imageStrip", "se-video", "se-oglink"}:
+            if "se-text-align-center" in block or "se-text-paragraph-align-center" in block:
+                alignments["center"] += 1
+            elif "se-text-align-right" in block or "se-text-paragraph-align-right" in block:
+                alignments["right"] += 1
+            else:
+                alignments["left"] += 1
+
     body = "\n\n".join(part.strip() for part in parts if part.strip())
-    return body, dict(counts), warnings, all_text_lines
+    # Determine overall alignment (center or right if it's dominant, otherwise left)
+    total_blocks = sum(alignments.values())
+    text_align = "left"
+    if total_blocks > 0:
+        most_common, count = alignments.most_common(1)[0]
+        if most_common != "left" and count / total_blocks > 0.5:
+            text_align = most_common
+
+    return body, dict(counts), warnings, all_text_lines, text_align
 
 
 def parse_published_date(raw_date: str) -> str:
@@ -371,7 +417,7 @@ def parse_post(source: str, default_blog_id: str, timeout: float) -> ParsedPost:
     blog_id, log_no, source_url, mobile_url = parse_source(source, default_blog_id)
     page_html = fetch_html(mobile_url, timeout=timeout)
     container = extract_main_container(page_html)
-    body, counts, warnings, text_lines = build_markdown_body(container)
+    body, counts, warnings, text_lines, text_align = build_markdown_body(container)
 
     title = meta_content(page_html, "og:title") or js_var(page_html, "sPostTitle")
     category = strip_tags(
@@ -409,6 +455,7 @@ def parse_post(source: str, default_blog_id: str, timeout: float) -> ParsedPost:
         mobile_url=mobile_url,
         markdown_body=body,
         component_counts=counts,
+        text_align=text_align,
         warnings=warnings,
     )
 
@@ -441,17 +488,25 @@ def localize_markdown_images(
     timeout: float,
     require_all: bool = True,
 ) -> tuple[str, list[Path], list[str]]:
-    image_pattern = re.compile(r"!\[([^\]]*)\]\((https?://[^)]+)\)")
+    image_pattern = re.compile(
+        r"!\[([^\]]*)\]\((https?://[^)]+)\)"
+        r"|(::og-card\{[^}\n]*?\bimage=)([\"'])(https?://[^\"']+)(\4)([^}\n]*\})"
+    )
     output_dir = LOCAL_IMAGE_ROOT / f"{post_id:03d}"
     written: list[Path] = []
     warnings: list[str] = []
     url_to_local: dict[str, str] = {}
-    image_index = 0
+    existing_indexes = []
+    if output_dir.exists():
+        for path in output_dir.glob("image-*.*"):
+            match = re.fullmatch(r"image-(\d+)", path.stem)
+            if match:
+                existing_indexes.append(int(match.group(1)))
+    image_index = max(existing_indexes, default=0)
 
-    def replace(match: re.Match[str]) -> str:
+    def local_image_path(source_url: str) -> str:
         nonlocal image_index
-        alt_text, source_url = match.groups()
-
+        source_url = html.unescape(source_url)
         if source_url not in url_to_local:
             image_index += 1
             try:
@@ -466,12 +521,25 @@ def localize_markdown_images(
                 warnings.append(f"Image download failed: {source_url} ({exc})")
                 url_to_local[source_url] = source_url
 
-        return f"![{alt_text}]({url_to_local[source_url]})"
+        return url_to_local[source_url]
+
+    def replace(match: re.Match[str]) -> str:
+        if match.group(1) is not None:
+            alt_text, source_url = match.group(1), match.group(2)
+            return f"![{alt_text}]({local_image_path(source_url)})"
+
+        prefix, quote, source_url, suffix = (
+            match.group(3),
+            match.group(4),
+            match.group(5),
+            match.group(7),
+        )
+        return f"{prefix}{quote}{local_image_path(source_url)}{quote}{suffix}"
 
     localized = image_pattern.sub(replace, markdown)
     remaining_remote_images = image_pattern.findall(localized)
     if require_all and remaining_remote_images:
-        failed_urls = ", ".join(url for _, url in remaining_remote_images)
+        failed_urls = ", ".join(match[1] or match[4] for match in remaining_remote_images)
         raise ValueError(f"Some markdown images still use remote URLs: {failed_urls}")
 
     return localized, written, warnings

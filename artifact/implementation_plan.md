@@ -1,33 +1,36 @@
-# Dev Story 새 포스트 추가 계획 (/add-post)
+# 블로그 포스트 본문 중앙 정렬 기능 추가 계획
 
-네이버 블로그의 최신 포스트를 분석하여 브랜드 페이지의 'Dev Story' 섹션에 최적화된 형식으로 추가합니다.
+블로그 포스트(특히 @[028.md](file:///Users/ep_macair/Documents/GitHub/eastfever-brand-page/src/content/blog/028.md)와 같이 모바일 최적화된 콘텐츠)의 가독성을 높이기 위해, 포스트별로 텍스트 정렬을 설정할 수 있는 기능을 추가하고, 네이버 블로그 가져오기 도구(`ops/import_naver_blog.py`)가 이를 자동으로 감지하도록 개선합니다.
 
-## 1. 대상 포스트 목록 (필수 선택)
+## 제안 사항
 
-현재 네이버 블로그 저장소에 있는 최신 포스트들입니다. 추가하고 싶은 포스트를 선택해 주세요.
+현재 모든 블로그 포스트는 `.markdown-body` 스타일을 통해 기본적으로 왼쪽 정렬(`text-align: left`)이 적용되어 있습니다. 하지만 네이버 블로그 스타일의 짧은 문장 중심 콘텐츠는 중앙 정렬이 더 어울리는 경우가 많습니다.
 
-1. **052_AI와 함께하는 게임기획(4)**
-2. **053_모두의창업**
-3. **054_맥북_터미널_클로드_코드**
+이를 위해:
+1. 포스트의 **Frontmatter**에 `textAlign` 속성을 추가하고, 이를 Astro 컴포넌트에서 동적으로 적용합니다.
+2. **Naver Blog Importer**를 수정하여 원문 블로그의 정렬 상태(주로 `se-text-align-center`)를 자동으로 파악해 Frontmatter에 반영합니다.
 
-## 2. 제안되는 작업 흐름
+## 변경 사항
 
-사용자가 포스트를 선택하면 다음 과정을 자동으로 수행합니다.
+### 1. [Astro Content Config] [content.config.ts](file:///Users/ep_macair/Documents/GitHub/eastfever-brand-page/src/content.config.ts)
+- `blog` 컬렉션 스키마에 `textAlign` 필드 추가 (`z.enum(['left', 'center', 'right']).optional()`).
 
-1. **내용 분석**: 선택된 마크다운 파일을 읽어 제목, 날짜, 태그 및 본문 내용을 파악합니다.
-2. **데이터 생성**:
-   - `posts/022.md` 신규 파일 생성 (기존 포스트 톤앤매너에 맞게 재구성)
-   - `data/posts.json` 업데이트 (ID: 22, 새로운 항목 추가)
-3. **디자인 반영**: 레이아웃과 디자인 시스템에 어긋나지 않도록 가공합니다.
+### 2. [Site Library] [site.ts](file:///Users/ep_macair/Documents/GitHub/eastfever-brand-page/src/lib/site.ts)
+- `PostMeta` 타입 정의에 `textAlign?: 'left' | 'center' | 'right'` 추가.
 
-## 3. 확인 사항 (Open Questions)
+### 3. [Blog Template] [[slug].astro](file:///Users/ep_macair/Documents/GitHub/eastfever-brand-page/src/pages/ko/blog/[slug].astro)
+- `#post-body` 요소에 `style={{ textAlign: post.textAlign }}` 적용. (기본값은 CSS에 정의된 대로 left)
 
-> [!IMPORTANT]
-> - 포스트의 **카테고리**를 수동으로 지정하시겠습니까? 아니면 본문 내용을 보고 제가 판단하여 지정(AI, 강의, 개발Tips, 바이브개발 등)할까요?
-> - 본문을 그대로 옮길까요, 아니면 브랜드 페이지의 격조 있는 톤(존댓말 등)으로 요약/수정할까요?
+### 4. [Import Tool] [import_naver_blog.py](file:///Users/ep_macair/Documents/GitHub/eastfever-brand-page/ops/import_naver_blog.py)
+- `build_markdown_body` 및 컴포넌트 파싱 로직에서 정렬 클래스(`se-text-align-center` 등)를 감지하도록 수정.
+- 포스트 전체의 지배적인 정렬 상태를 계산하여 `ParsedPost` 및 최종 마크다운의 Frontmatter에 `textAlign` 필드 추가.
 
-## 4. 검증 계획
+### 5. [Blog Content] [028.md](file:///Users/ep_macair/Documents/GitHub/eastfever-brand-page/src/content/blog/028.md)
+- Frontmatter에 `textAlign: center` 추가.
 
-- `022.md` 파일이 올바른 위치에 생성되었는지 확인
-- `data/posts.json`에 유효한 JSON으로 데이터가 추가되었는지 확인
-- 로컬 개발 서버(`/rundev`)를 통해 실제 페이지에서 포스트가 정상적으로 노출되는지 확인 (선택 사항)
+## 검증 계획
+
+### 수동 확인
+- `npm run dev` 실행 후 `/ko/blog/vibe-coding-ai-tools-one-month-review/` 페이지 접속하여 중앙 정렬 확인.
+- `python3 ops/import_naver_blog.py [URL] --dev-story` 실행 시 생성된 마크다운에 `textAlign: center`가 자동으로 들어가는지 확인 (중앙 정렬된 원본 기준).
+- 다른 포스트(027.md 등)는 여전히 왼쪽 정렬을 유지하는지 확인.

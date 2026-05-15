@@ -93,6 +93,21 @@ Astro URL 기준:
 
 기존 `/post.html?id=N`과 `/ko/blog/0XX/`는 canonical slug URL(`/ko/blog/{slug}/`)로 이동한다.
 
+#### 네이버 링크 박스 규약
+
+- 네이버 SmartEditor `se-oglink` 링크 박스는 일반 링크나 인용문으로 옮기지 않는다.
+- 반드시 `::og-card{url="..." title="..." description="..." image="..."}` 문법으로 표현한다.
+- 링크 박스 썸네일도 원격 네이버 URL을 그대로 두지 않고 `/assets/blog/0XX/...` 로컬 이미지로 저장한다.
+- `description`은 네이버 링크 박스의 요약 문구를 유지하고, `image`가 없는 경우에만 텍스트 카드로 허용한다.
+- 새 포스트 검수 시 `rg -n "mblogthumb|blogthumb|pstatic|dthumb" ...`로 네이버 원격 이미지 URL이 남아 있지 않은지 확인한다.
+
+#### 네이버 본문 개행 규약
+
+- 네이버 블로그 본문의 줄 단위 개행은 DEV STORY 본문에서도 그대로 보이게 유지한다.
+- 가져오기/정리 과정에서 문단 안의 단일 개행을 공백으로 합치거나 문장을 한 줄로 재흐름 처리하지 않는다.
+- DEV STORY 렌더러는 블로그 포스트 마크다운에 대해 단일 개행을 `<br>`로 렌더링해야 한다.
+- 새 포스트 검수 시 원문에서 줄이 나뉜 짧은 문단이 DEV STORY 상세 화면에서도 같은 줄 단위로 나뉘어 보이는지 확인한다.
+
 ### CSS 구조
 
 - `src/styles/global.css` — 기본 스타일 및 데스크톱 레이아웃
