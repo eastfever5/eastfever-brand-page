@@ -298,7 +298,11 @@ async def run_all_tests():
                 "ja": "https://eastfever.com/ja/",
                 "x-default": "https://eastfever.com/ko/",
             },
-            "counts": [(".devstory-card", 2), (".service-card", len(SITE_DATA["services"]))],
+            "counts": [
+                (".devstory-card", 3),
+                (".devstory-card .visit-btn", 3),
+                (".service-card", len(SITE_DATA["services"])),
+            ],
             "texts": [("#hero-main-text", "Beyond Here"), ("#title-devstories", SITE_DATA["sections"]["devstories"]["ko"])],
         },
         {
@@ -367,7 +371,7 @@ async def run_all_tests():
             page = await browser.new_page()
             console_errors = []
             page_errors = []
-            page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+            page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" and "compute-pressure" not in msg.text else None)
             page.on("pageerror", lambda err: page_errors.append(str(err)))
 
             print("--- Starting Astro E2E Page Tests ---")

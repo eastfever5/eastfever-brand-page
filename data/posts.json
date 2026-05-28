@@ -257,6 +257,17 @@
       "slug": "vibe-coding-ai-tools-one-month-review",
       "textAlign": "center",
       "source": "https://blog.naver.com/five_east_fever/224286548466"
+    },
+    {
+      "id": 29,
+      "title": "2026년 바이브코딩으로 만들어 본 순위표 생성기 feat. 점수.txt",
+      "summary": "텍사스 홀덤 바의 점수표 텍스트를 파싱하여 자동으로 깔끔한 순위표와 순위 분포표를 뽑아주는 웹앱(RankBoard Maker)을 Antigravity 2.0으로 2~3일 만에 개발하고 Cloudflare Pages로 배포한 과정입니다.",
+      "category": "바이브개발",
+      "date": "2026-05-27",
+      "file": "029.md",
+      "slug": "score-text-rankboard-maker",
+      "textAlign": "center",
+      "source": "https://blog.naver.com/five_east_fever/224298172038"
     }
   ]
 }

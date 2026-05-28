@@ -250,6 +250,23 @@
       "thumbnail": "assets/mfc-thumb.webp"
     },
     {
+      "id": "rankboard",
+      "type": "webapp",
+      "status": "online",
+      "url": "https://rank.eastfever.com/",
+      "name": {
+        "ko": "점수 순위 계산기",
+        "en": "RankBoard Maker",
+        "ja": "得点順位計算機"
+      },
+      "description": {
+        "ko": "점수 리스트를 입력하면 실시간으로 정렬된 순위표와 백분율 기반의 랭크 분포를 생성해 주는 웹 도구",
+        "en": "A web tool that generates a real-time sorted scoreboard and percentile-based rank distribution from a list of scores.",
+        "ja": "得点リストを入力すると、リアルタイムでソートされた順位表とパーセンテージベースのランク分布を生成するWebツール"
+      },
+      "thumbnail": "assets/rankboard-thumb.png"
+    },
+    {
       "id": "hihi",
       "type": "game",
       "status": "online",
@@ -327,9 +344,9 @@
       "ja": "開発画面を見る"
     },
     "readStory": {
-      "ko": "바로 읽기",
-      "en": "Read Story",
-      "ja": "読む"
+      "ko": "상세 내용 보기",
+      "en": "View Details",
+      "ja": "詳細を見る"
     },
     "privacy": {
       "ko": "개인정보보호방침",

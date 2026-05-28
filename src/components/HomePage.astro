@@ -14,7 +14,7 @@ type Props = {
 };
 
 const { lang } = Astro.props;
-const latestPosts = (await getSortedPosts()).slice(0, 2).map(post => ({
+const latestPosts = (await getSortedPosts()).slice(0, 3).map(post => ({
   ...post,
   media: getPostMedia(post)
 }));
@@ -83,7 +83,7 @@ function serviceTypeLabel(type: string) {
                 </div>
                 <h3 class="devstory-title">{post.title}</h3>
                 <p class="devstory-summary">{post.summary}</p>
-                <span class="devstory-cta">{getLocalizedValue(data.common.readStory, lang)}</span>
+                <span class="visit-btn">{getLocalizedValue(data.common.readStory, lang)}</span>
               </div>
             </a>
           ))}

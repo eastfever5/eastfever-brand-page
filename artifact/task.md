@@ -1,5 +1,0 @@
-- [x] `src/content.config.ts`에 `textAlign` 스키마 추가
-- [x] `src/lib/site.ts`의 `PostMeta` 타입 업데이트
-- [x] `src/pages/ko/blog/[slug].astro`에서 `textAlign` 스타일 적용
-- [x] `ops/import_naver_blog.py`에 정렬 감지 로직 추가
-- [x] `src/content/blog/028.md`에 `textAlign: center` 적용 및 검증

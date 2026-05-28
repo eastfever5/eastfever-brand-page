@@ -26,5 +26,7 @@ export const legacyPostMap: Record<string, string> = {
   "25": "/ko/blog/codex-first-run-macbook-2026/",
   "26": "/ko/blog/draw-the-life-vibe-webgame-3-weeks/",
   "27": "/ko/blog/draw-the-life-prototype-retrospective/",
-  "28": "/ko/blog/vibe-coding-ai-tools-one-month-review/"
+  "28": "/ko/blog/vibe-coding-ai-tools-one-month-review/",
+  "29": "/ko/blog/score-text-rankboard-maker/"
 };
+
